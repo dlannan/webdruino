@@ -1,0 +1,1 @@
+call bin\win64\luajit.exe lua\http-server.lua

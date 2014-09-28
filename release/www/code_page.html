@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>WebDruino</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" charset="utf-8">
+
+	<script src="js/jquery-2.1.1.min.js"></script> 
+
+	<script src="js/simple-slider.js"></script>
+
+	<link href="css/simple-slider.css" rel="stylesheet" type="text/css" />
+	<link href="css/simple-slider-volume.css" rel="stylesheet" type="text/css" />  
+
+<style>
+[class^=slider] { display: inline-block; margin-bottom: 0}
+</style>
+
+	<link href="css/bootstrap.css" rel="stylesheet">	
+	<link href="css/bootstrap-theme.css" rel="stylesheet"> 
+
+
+  </head>
+  <body>
+  
+ 	<div class="container">
+	
+	<nav class="navbar navbar-default" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">WebDruino</a>
+    </div>
+	<div class="container-fluid">		
+
+		<div class="navbar-form navbar-left">
+		<div class="btn-group">
+			<button onclick="location.href='/index.html';" class="btn btn-info">Main Page</button>
+		</div>
+		</div>
+		
+	</div>
+	</nav>
+
+	<div class="panel-group" id="accordion">
+	  <div class="panel panel-default">
+		<div class="panel-heading">
+		  <h4 class="panel-title">
+			<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+			  <h8>Arduino Code</h8>
+			</a>
+		  </h4>
+		</div>
+		<div id="collapseOne" class="panel-collapse collapse in">
+		  <div class="panel-body">
+			<div id="code_page" style="height:400px;overflow: auto">
+			</div>
+		  </div>
+		</div>
+	  </div>	
+	</div>	
+	
+	</div> <!-- container -->
+	
+    <!-- Load JS here for greater good =============================-->
+	<script src="js/bootstrap.js"></script>		
+	<script src="js/raphael.2.1.0.min.js"></script>
+    <script src="js/justgage.1.0.1.min.js"></script>
+  <script>
+		$("[data-slider]")
+		.each(function () {
+		  var input = $(this);
+		  $("<span>")
+			.addClass("output")
+			.insertAfter($(this));
+		})
+		.bind("slider:ready slider:changed", function (event, data) {
+		  $(this)
+			.nextAll(".output:first")
+			  .html(data.value.toFixed(3));
+		});
+  </script>
+  </body>
+</html>
