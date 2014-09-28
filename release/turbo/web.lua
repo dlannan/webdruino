@@ -621,7 +621,7 @@ end
 -- @param path (String) Path to file.
 -- @return 0 + buffer (String) on success, else -1.
 function web._StaticWebCache:read_file(path)
-    local fd = io.open(path, "r")
+    local fd = io.open(path, "rb")
     if not fd then
         return -1, nil
     end
