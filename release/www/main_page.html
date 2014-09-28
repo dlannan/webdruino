@@ -101,32 +101,33 @@
  	<div class="container">
 	
 	<nav class="navbar navbar-default" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <a class="navbar-brand" href="#">WebDruino</a>
-    </div>
-	<div class="container-fluid">		
-
-		<div class="navbar-form navbar-left">
+	
+	<div class="container-fluid">	
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+		  <a class="navbar-brand" href="#">WebDruino</a>
+		</div>
+	
+		<div class="collapse navbar-collapse">
+		<nav class="navbar-form navbar-left" role="search">
 		<div class="btn-group">
 			<button onclick="location.href='/config_page.html';" class="btn btn-warning">Config</button>
-		</div>		<div class="btn-group">
+
 			<button onclick="location.href='/code_page.html';" class="btn btn-info">Code</button>
 		</div>
-		</div>
-		
-		<div class="navbar-form navbar-right">
+		</nav>
+		<nav class="navbar-form navbar-right" role="search">
 		<div class="btn-group">
 			<button onclick="location.href='/enablecomms.html?VAR_tval';" class="btn btn-danger">Reset Serial</button>
 		</div>
-		
+  
 		<div class="input-group">
 		  <span class="input-group-btn">
 			<button id="update_serial_name_btn" class="btn btn-default" type="button">Device</button>
 		  </span>
-		  <input  id="serial_name" type="text" class="form-control">
+		  <input  id="serial_name" type="text" class="form-control" style="width:80px;">
 		</div><!-- /input-group -->
-
+		
 		<div class="btn-group">
 		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
 			Baud Rate <span class="caret"></span>
@@ -139,22 +140,22 @@
 			<li><a href="#">VAR_bauds5</a></li>
 		  </ul>
 		</div>
-		
+
 		<div class="input-group">
 		  <span class="input-group-btn">
 			<button id="update_rate_btn" class="btn btn-default" type="button">Rate</button>
 		  </span>
-		  <input id="serial_rate" type="text" class="form-control">
+		  <input id="serial_rate" type="text" class="form-control" style="width:80px;">
 		  <span class="input-group-addon">ms</span>
 		</div><!-- /input-group -->
-		
+
 		<div class="btn-group">
 			<button onclick="location.href='/index.htmlttq';" class="btn btn-danger">Close Server</button>
 		</div>
-		
-		</div>
-
+		</nav>
 	</div>
+	</div>
+	
 	</nav>
 
 	<div class="row">
@@ -218,7 +219,7 @@
 				
 			<table  class="table" width="100%">
 				<tr>
-				<td><img src="/img/button_grey.jpg" alt="" /> D0</td>
+				<td><img src="img/button_grey.jpg" alt="" /> D0</td>
 				<td><span class="glyphicon glyphicon-record"></span> D4</td>
 				<td><span class="glyphicon glyphicon-record"></span> D8</td>
 				<td><span class="glyphicon glyphicon-record"></span> D12</td>

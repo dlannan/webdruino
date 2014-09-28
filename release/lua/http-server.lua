@@ -166,6 +166,8 @@ local app = turbo.web.Application:new({
     {"^/analog_input.html(.*)", AnalogInputHandler},
     {"^/code_page.html(.*)", CodePageHandler},
     {"^/index.html(.*)", BasePageHandler},
+	{"^/img/(.*)",  turbo.web.StaticFileHandler, "www/img/"},
+	{"^/$", turbo.web.StaticFileHandler, "www/index.html"},
     -- Serve contents of directory.
     {"^/(.*)$", turbo.web.StaticFileHandler, "www/"}
 })
