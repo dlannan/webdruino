@@ -9,7 +9,15 @@ Web Control of your favourite Arduino device.
 
 WARNING: Very early development - not ready for deployment! Use at own risk!
 
-Currently Win64 only working version (Linux and Win32 versions coming)
+Currently Win32 only working version (Linux and Win64 versions coming)
+
+TODO:
+- Digital pins operational
+- Configuration for Analog and Digital pin usage.
+- Configuration for Arduino type
+- Lua programming panel
+- Arduino software in Code page
+- Bugs and replacement of Poll system (also Network Tcp Server)
 
 Things to be very wary of:
 - The Poll system has been gutted - it works, but its missing all the error systems (I had all sorts of issues with it). 
