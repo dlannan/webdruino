@@ -3,6 +3,10 @@ webdruino
 
 Web Control of your favourite Arduino device.
 
+![alt text][id]
+
+[id]: /screenshots/WebDruino001.png "Screenshot001"
+
 WARNING: Very early development - not ready for deployment! Use at own risk!
 
 Currently Win64 only working version (Linux and Win32 versions coming)
