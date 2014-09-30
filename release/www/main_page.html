@@ -81,6 +81,21 @@
 		$("#analog_input7").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"7",  aod:data.value  }, 0 ); });
 		$("#analog_input8").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"8",  aod:data.value  }, 0 ); });
 
+		$("#digital00").attr('src', "img/button_grey.png");		
+		$("#digital01").attr('src', "img/button_grey.png");		
+		$("#digital02").attr('src', "img/button_grey.png");		
+		$("#digital03").attr('src', "img/button_grey.png");		
+		$("#digital04").attr('src', "img/button_grey.png");		
+		$("#digital05").attr('src', "img/button_grey.png");		
+		$("#digital06").attr('src', "img/button_grey.png");		
+		$("#digital07").attr('src', "img/button_grey.png");		
+		$("#digital08").attr('src', "img/button_grey.png");		
+		$("#digital09").attr('src', "img/button_grey.png");		
+		$("#digital10").attr('src', "img/button_grey.png");		
+		$("#digital11").attr('src', "img/button_grey.png");		
+		$("#digital12").attr('src', "img/button_grey.png");		
+		$("#digital13").attr('src', "img/button_grey.png");		
+		
 		var auto_refresh = setInterval(
 		function ()
 		{
@@ -89,6 +104,7 @@
 			$.get( "/readanalog.html?input=2&VAR_tval", function( data ) { g2.refresh(data); });
 			$.get( "/readanalog.html?input=3&VAR_tval", function( data ) { g3.refresh(data); });
 			$.get( "/readanalog.html?input=4&VAR_tval", function( data ) { g4.refresh(data); });
+			$.get( "/readdigital.html?input=4&VAR_tval");
 
 		}, VAR_serial_update ); // refresh every 2000 milliseconds
 	
@@ -219,28 +235,26 @@
 				
 			<table  class="table" width="100%">
 				<tr>
-				<td><img src="img/button_grey.jpg" alt="" /> D0</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D4</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D8</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D12</td>
+				<td><img id="digital00" src="VAR_digital00" alt="" /> D0</td>
+				<td><img id="digital04" src="VAR_digital04" alt="" /> D4</td>
+				<td><img id="digital08" src="VAR_digital08" alt="" /> D8</td>
+				<td><img id="digital12" src="VAR_digital12" alt="" /> D12</td>
 				</tr>
 				<tr>
-				<td><img src="img/button_grey.jpg" alt="" /> D1</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D5</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D9</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D13</td>
+				<td><img id="digital01" src="VAR_digital01" alt="" /> D1</td>
+				<td><img id="digital05" src="VAR_digital05" alt="" /> D5</td>
+				<td><img id="digital09" src="VAR_digital09" alt="" /> D9</td>
+				<td><img id="digital13" src="VAR_digital13" alt="" /> D13</td>
 				</tr>
 				<tr>
-				<td><img src="img/button_grey.jpg" alt="" /> D2</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D6</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D10</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D14</td>
+				<td><img id="digital02" src="VAR_digital02" alt="" /> D2</td>
+				<td><img id="digital06" src="VAR_digital06" alt="" /> D6</td>
+				<td><img id="digital10" src="VAR_digital10" alt="" /> D10</td>
 				</tr>
 				<tr>
-				<td><img src="img/button_grey.jpg" alt="" /> D3</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D7</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D11</td>
-				<td><img src="img/button_grey.jpg" alt="" /> D15</td>
+				<td><img id="digital03" src="VAR_digital03" alt="" /> D3</td>
+				<td><img id="digital07" src="VAR_digital07" alt="" /> D7</td>
+				<td><img id="digital11" src="VAR_digital11" alt="" /> D11</td>
 				</tr>
 			</table>
 

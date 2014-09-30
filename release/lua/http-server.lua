@@ -49,7 +49,10 @@ baud_rate 		= 1
 serial_name 	= "COM5"
 serial_update 	= 2000
 
+-- ***********************************************************************
+
 analog_output 	= { 0, 0, 0, 0 }
+digital_output	= { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
 
 -- ***********************************************************************
 
@@ -130,6 +133,17 @@ function CommHandler:get(data)
 	-- rs232:WriteComms("&R02@") -- Driving a LED of A2
 	rs232:WriteComms("&R03@")
 	rs232:WriteComms("&R04@")
+	
+	-- Make a digital mask
+	local dVal = 0
+	for k,v in pairs(digital_output) do
+		if v ~= -1 then
+			dVal = bit.bor(dVal, bit.lshift(1, k))			
+		end
+	end
+	if dVal > 0 then
+		rs232:WriteComms("&r"..string.format("%04x", dVal).."@")
+	end
 	
 	local d = rs232:ReadComms()
 	--print("CommReadTime: ", util.milliSeconds() - c)
