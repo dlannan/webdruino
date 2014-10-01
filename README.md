@@ -30,9 +30,6 @@ Feel free to get commit request. I hope to have this fully functional in the nex
 
 ---------------------------------------------------------------------------------------------------------------------
 The MIT License (MIT)
-[OSI Approved License]
-
-The MIT License (MIT)
 
 Copyright (c) <year> <copyright holders>
 
