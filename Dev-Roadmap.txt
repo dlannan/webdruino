@@ -1,0 +1,50 @@
+Dev-RoadMap
+-----------------------------------------------------------------------------------
+The document describes an intended path of development. WebDruino will have a series
+of components to complete and each component exposing a new set of features. 
+
+To ensure consitency the components and requirements for them will be placed here
+with an initial timeline to have the components complete. This also allows us to manage
+components and change their priorities depending on demands and requests.
+-----------------------------------------------------------------------------------
+
+C01 - Complete Digital and Analog IO capability 
+Estimate: 1 week.
+  Includes the ability for webdruino server to read/write both types.
+
+C02 - Completion of WebDruino protocol
+Estimate: 1 week.
+  Inital ASCII protocol is complete.
+
+C03 - Configuration for Digital and Analog pin assignment.
+Estimate: 2 weeks.
+  Closely coupled/dependent on C01 this needs to be completed ASAP.
+
+C04 - Configuration for Arduino types
+Estimate: 2 weeks.
+
+C05 - Bug Collation and QA Pass
+Estimate: 4 weeks.
+  Collect bugs, set their priority and fix a percentage (Determined by their scale/impact). 
+  During this time a number of QA Passes for the code and tools. These will feed into the 
+  bug collection as well.
+  Aim: Stabilize the code base and ensure an initial Alpha release.
+  
+C06 - Develop design for flexible controls
+Estimate: 2 weeks.
+  Design a simple mustache template system for handling controls (of almost any type) and 
+  how they map to pins.
+  
+C07 - Develop Lua interface for the Web.
+Estimate: 4 weeks.
+  Allow the WebDruino interface to provide control systems for the Arduino that can be 
+  sent to the devices and executed as needed. Ideally all LuaJit based. C08 is closely
+  coupled to this.
+  
+C08 - LuaJit (simplified) OS type layer for Arduino devices.
+Estimate: 4 weeks.
+  A cut down LuaJit that runs basic execution of pin control on Arduino devices. It
+  is expected the OS layer will be less than 12KB. Allowing up to 12KB of LuaJit 
+  opcode to be executed on a Nano Arduino (one of the smallest platforms).
+
+
