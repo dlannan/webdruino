@@ -6,7 +6,7 @@ serial.fd = nil
 function serial:InitComms()
 	if self.fd then self:CloseComms() end
 	print("serial_name", serial_name)
-	self.fd = sys.handle():open(serial_name, "rw")
+	self.fd = sys.handle():open(serial_name, "rwb")
 	if self.fd == nil then return end
 	--print(self.fd)
 	--self.fd:comm_queues(1024, 1024)

@@ -50,9 +50,13 @@ serial_name 	= "COM5"
 serial_update 	= 2000
 
 -- ***********************************************************************
+-- This will turn into pin configs.
 
-analog_output 	= { 0, 0, 0, 0 }
-digital_output	= { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 }
+analog_output 	= { 0, 0, 0, 0, 0 }
+digital_output	= { -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0 }
+
+-- Mapping for Arduino Nano
+AOP = {	0,1,2,3,4,5,6,7,8,9,10,11,12,13 }
 
 -- ***********************************************************************
 
@@ -104,7 +108,7 @@ function ConfigHandler:get()
 	
 	serial_name = self:get_argument("name", "COM5", true)
 	serial_update = tonumber(self:get_argument("rate", "2000", true))
-	print("Check: ", serial_name, serial_update)
+	--print("Check: ", serial_name, serial_update)
 	
 	self:redirect("/index.html?"..tostring(getVal()), false)
 end
@@ -123,30 +127,41 @@ function AnalogHandler:get(data)
 end
 
 -- ***********************************************************************
+-- Handler that takes a single argument intput for the data id
+local DigitalHandler = class("DigitalHandler", turbo.web.RequestHandler)
+function DigitalHandler:get(data)
+	
+	local input = (self:get_argument("input", "", true))
+	if input ~= "" then
+		local outdata = ""
+		local k = tonumber(input)
+
+		-- Check digital
+		local v = digital_output[k]
+		if v ~= -1 then
+		if v > 0 then
+				outdata = "img/button_green.png" 
+			else
+				outdata = "img/button_red.png"
+			end
+		else
+			outdata = "img/button_grey.png"
+		end
+		self:write(outdata)
+	end
+end
+
+
+-- ***********************************************************************
 -- Handler that takes a single argument 'username'
 local CommHandler = class("CommHandler", turbo.web.RequestHandler)
 function CommHandler:get(data)
 	local c = util.milliSeconds()
 	
-	-- Request Updates for Analog stuff
-	rs232:WriteComms("&R01@")
-	-- rs232:WriteComms("&R02@") -- Driving a LED of A2
-	rs232:WriteComms("&R03@")
-	rs232:WriteComms("&R04@")
-	
-	-- Make a digital mask
-	local dVal = 0
-	for k,v in pairs(digital_output) do
-		if v ~= -1 then
-			dVal = bit.bor(dVal, bit.lshift(1, k))			
-		end
-	end
-	if dVal > 0 then
-		rs232:WriteComms("&r"..string.format("%04x", dVal).."@")
-	end
+	cmd:ReadAnalog()
+	cmd:ReadDigital()
 	
 	local d = rs232:ReadComms()
-	--print("CommReadTime: ", util.milliSeconds() - c)
 	local data = cmd:CheckCommand(d)	
 	if data ~= "nil" then
 		if string.len(data) > 1 then
@@ -155,6 +170,7 @@ function CommHandler:get(data)
 		end
 	end	
 
+	cmd:UpdateOutput(rs232, 6)
 	self:write(read_data)
 	--self:redirect("/index.html", false)
 end
@@ -166,8 +182,9 @@ function AnalogInputHandler:post()
 	local data = self:get_argument("aod", "0.0", true)
 	local ival = self:get_argument("aot", "1", true)
 	-- print("AnalogInput: ", ival, data)
-	local output = cmd:BuildCommand("W", AOP[tonumber(ival)], math.floor(data * 1024.0))
-	if output then rs232:WriteComms( output ) end
+	
+	local output = cmd:BuildCommand("W", AOP[tonumber(ival)], math.floor(data * 1023.0))
+	if output then cmd:WriteCommand( output ) end
 end
 
 -- ***********************************************************************
@@ -177,7 +194,8 @@ local app = turbo.web.Application:new({
 	{"^/readcomms.html", CommHandler},
 	{"^/configcomms.html(.*)", ConfigHandler},
 	{"^/readanalog.html(.*)", AnalogHandler},
-    {"^/analog_input.html(.*)", AnalogInputHandler},
+	{"^/readdigital.html(.*)", DigitalHandler},
+    {"^/analoginput.html(.*)", AnalogInputHandler},
     {"^/code_page.html(.*)", CodePageHandler},
     {"^/index.html(.*)", BasePageHandler},
 	{"^/img/(.*)",  turbo.web.StaticFileHandler, "www/img/"},

@@ -71,30 +71,15 @@
 		$("#update_rate_btn").click(function (event, data) {
 			$.get( "/configcomms.html", { rate: $("#serial_rate").val(), tm:VAR_tval }, 0 ); });	
 		
-		$("#analog_input1").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"1",  aod:data.value  }, 0 ); });
-		$("#analog_input2").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"2",  aod:data.value  }, 0 ); });
-		$("#analog_input3").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"3",  aod:data.value  }, 0 ); });
-		$("#analog_input4").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"4",  aod:data.value  }, 0 ); });
+		$("#analoginput1").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"1",  aod:data.value  }, 0 ); });
+		$("#analoginput2").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"2",  aod:data.value  }, 0 ); });
+		$("#analoginput3").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"3",  aod:data.value  }, 0 ); });
+		$("#analoginput4").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"4",  aod:data.value  }, 0 ); });
 				
-		$("#analog_input5").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"5",  aod:data.value  }, 0 ); });
-		$("#analog_input6").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"6",  aod:data.value  }, 0 ); });
-		$("#analog_input7").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"7",  aod:data.value  }, 0 ); });
-		$("#analog_input8").bind("slider:changed", function (event, data) {	$.post("/analog_input.html",  {  aot:"8",  aod:data.value  }, 0 ); });
-
-		$("#digital00").attr('src', "img/button_grey.png");		
-		$("#digital01").attr('src', "img/button_grey.png");		
-		$("#digital02").attr('src', "img/button_grey.png");		
-		$("#digital03").attr('src', "img/button_grey.png");		
-		$("#digital04").attr('src', "img/button_grey.png");		
-		$("#digital05").attr('src', "img/button_grey.png");		
-		$("#digital06").attr('src', "img/button_grey.png");		
-		$("#digital07").attr('src', "img/button_grey.png");		
-		$("#digital08").attr('src', "img/button_grey.png");		
-		$("#digital09").attr('src', "img/button_grey.png");		
-		$("#digital10").attr('src', "img/button_grey.png");		
-		$("#digital11").attr('src', "img/button_grey.png");		
-		$("#digital12").attr('src', "img/button_grey.png");		
-		$("#digital13").attr('src', "img/button_grey.png");		
+		$("#analoginput5").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"5",  aod:data.value  }, 0 ); });
+		$("#analoginput6").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"6",  aod:data.value  }, 0 ); });
+		$("#analoginput7").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"7",  aod:data.value  }, 0 ); });
+		$("#analoginput8").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"8",  aod:data.value  }, 0 ); });
 		
 		var auto_refresh = setInterval(
 		function ()
@@ -104,8 +89,23 @@
 			$.get( "/readanalog.html?input=2&VAR_tval", function( data ) { g2.refresh(data); });
 			$.get( "/readanalog.html?input=3&VAR_tval", function( data ) { g3.refresh(data); });
 			$.get( "/readanalog.html?input=4&VAR_tval", function( data ) { g4.refresh(data); });
-			$.get( "/readdigital.html?input=4&VAR_tval");
 
+			$.get("/readdigital.html?input=01&VAR_tval", function (data) { $("#digital00").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=02&VAR_tval", function (data) { $("#digital01").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=03&VAR_tval", function (data) { $("#digital02").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=04&VAR_tval", function (data) { $("#digital03").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=05&VAR_tval", function (data) { $("#digital04").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=06&VAR_tval", function (data) { $("#digital05").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=07&VAR_tval", function (data) { $("#digital06").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=08&VAR_tval", function (data) { $("#digital07").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=09&VAR_tval", function (data) { $("#digital08").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=10&VAR_tval", function (data) { $("#digital09").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=11&VAR_tval", function (data) { $("#digital10").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=12&VAR_tval", function (data) { $("#digital11").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=13&VAR_tval", function (data) { $("#digital12").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=14&VAR_tval", function (data) { $("#digital13").attr("src", data+"?VAR_tval"); });
+
+			
 		}, VAR_serial_update ); // refresh every 2000 milliseconds
 	
 	}
@@ -197,27 +197,27 @@
 			  <table  class="table" width="100%">
 				<tr>
 				<td>AI 0</td>
-				<td><input id="analog_input1" type="text" data-slider="true"></td>
+				<td><input id="analoginput1" type="text" data-slider="true"></td>
 				<td>AI 1</td>
-				<td><input id="analog_input2" type="text" data-slider="true"></td>
+				<td><input id="analoginput2" type="text" data-slider="true"></td>
 				</tr>
 				<tr>
 				<td>AI 2</td>
-				<td><input id="analog_input3" type="text" data-slider="true"></td>
+				<td><input id="analoginput3" type="text" data-slider="true"></td>
 				<td>AI 3</td>
-				<td><input id="analog_input4" type="text" data-slider="true"></td>
+				<td><input id="analoginput4" type="text" data-slider="true"></td>
 				</tr>
 				<tr>
 				<td>AI 4</td>
-				<td><input id="analog_input5" type="text" data-slider="true"></td>
+				<td><input id="analoginput5" type="text" data-slider="true"></td>
 				<td>AI 5</td>
-				<td><input id="analog_input6" type="text" data-slider="true"></td>
+				<td><input id="analoginput6" type="text" data-slider="true"></td>
 				</tr>
 				<tr>
 				<td>AI 6</td>
-				<td><input id="analog_input7" type="text" data-slider="true"></td>
+				<td><input id="analoginput7" type="text" data-slider="true"></td>
 				<td>AI 7</td>
-				<td><input id="analog_input8" type="text" data-slider="true"></td>
+				<td><input id="analoginput8" type="text" data-slider="true"></td>
 				</tr>
 			  </table>
 			</div>
@@ -235,26 +235,26 @@
 				
 			<table  class="table" width="100%">
 				<tr>
-				<td><img id="digital00" src="VAR_digital00" alt="" /> D0</td>
-				<td><img id="digital04" src="VAR_digital04" alt="" /> D4</td>
-				<td><img id="digital08" src="VAR_digital08" alt="" /> D8</td>
-				<td><img id="digital12" src="VAR_digital12" alt="" /> D12</td>
+				<td><img id="digital00" alt="" /> D0</td>
+				<td><img id="digital04" alt="" /> D4</td>
+				<td><img id="digital08" alt="" /> D8</td>
+				<td><img id="digital12" alt="" /> D12</td>
 				</tr>
 				<tr>
-				<td><img id="digital01" src="VAR_digital01" alt="" /> D1</td>
-				<td><img id="digital05" src="VAR_digital05" alt="" /> D5</td>
-				<td><img id="digital09" src="VAR_digital09" alt="" /> D9</td>
-				<td><img id="digital13" src="VAR_digital13" alt="" /> D13</td>
+				<td><img id="digital01" alt="" /> D1</td>
+				<td><img id="digital05" alt="" /> D5</td>
+				<td><img id="digital09" alt="" /> D9</td>
+				<td><img id="digital13" alt="" /> D13</td>
 				</tr>
 				<tr>
-				<td><img id="digital02" src="VAR_digital02" alt="" /> D2</td>
-				<td><img id="digital06" src="VAR_digital06" alt="" /> D6</td>
-				<td><img id="digital10" src="VAR_digital10" alt="" /> D10</td>
+				<td><img id="digital02" alt="" /> D2</td>
+				<td><img id="digital06" alt="" /> D6</td>
+				<td><img id="digital10" alt="" /> D10</td>
 				</tr>
 				<tr>
-				<td><img id="digital03" src="VAR_digital03" alt="" /> D3</td>
-				<td><img id="digital07" src="VAR_digital07" alt="" /> D7</td>
-				<td><img id="digital11" src="VAR_digital11" alt="" /> D11</td>
+				<td><img id="digital03" alt="" /> D3</td>
+				<td><img id="digital07" alt="" /> D7</td>
+				<td><img id="digital11" alt="" /> D11</td>
 				</tr>
 			</table>
 
