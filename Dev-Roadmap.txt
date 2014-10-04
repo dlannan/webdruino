@@ -11,11 +11,18 @@ components and change their priorities depending on demands and requests.
 C01 - Complete Digital and Analog IO capability 
 Estimate: 1 week.
   Includes the ability for webdruino server to read/write both types.
+-- Update: Some cleanup left, mostly done.
 
 C02 - Completion of WebDruino protocol
 Estimate: 1 week.
   Inital ASCII protocol is complete.
+-- Update: Mostly done. Will add extend methods.
 
+C02a - Working build for Linux and OSX
+Estimate: 1 week.
+  Need to finish repairing Network Tcp Server (removal)
+  Get LuaSys working on Linux/OSX and new changes to turbo.
+  
 C03 - Configuration for Digital and Analog pin assignment.
 Estimate: 2 weeks.
   Closely coupled/dependent on C01 this needs to be completed ASAP.
