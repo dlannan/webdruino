@@ -84,26 +84,26 @@
 		var auto_refresh = setInterval(
 		function ()
 		{
-			$("#comms_log").load("/readcomms.html?VAR_tval");
-			$.get( "/readanalog.html?input=1&VAR_tval", function( data ) { g1.refresh(data); });
-			$.get( "/readanalog.html?input=2&VAR_tval", function( data ) { g2.refresh(data); });
-			$.get( "/readanalog.html?input=3&VAR_tval", function( data ) { g3.refresh(data); });
-			$.get( "/readanalog.html?input=4&VAR_tval", function( data ) { g4.refresh(data); });
+			$("#comms_log").load("/readcomms.html?value=VAR_tval");
+			$.get( "/readanalog.html?input=1&amp;value=VAR_tval", function( data ) { g1.refresh(data); });
+			$.get( "/readanalog.html?input=2&amp;value=VAR_tval", function( data ) { g2.refresh(data); });
+			$.get( "/readanalog.html?input=3&amp;value=VAR_tval", function( data ) { g3.refresh(data); });
+			$.get( "/readanalog.html?input=4&amp;value=VAR_tval", function( data ) { g4.refresh(data); });
 
-			$.get("/readdigital.html?input=01&VAR_tval", function (data) { $("#digital00").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=02&VAR_tval", function (data) { $("#digital01").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=03&VAR_tval", function (data) { $("#digital02").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=04&VAR_tval", function (data) { $("#digital03").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=05&VAR_tval", function (data) { $("#digital04").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=06&VAR_tval", function (data) { $("#digital05").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=07&VAR_tval", function (data) { $("#digital06").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=08&VAR_tval", function (data) { $("#digital07").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=09&VAR_tval", function (data) { $("#digital08").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=10&VAR_tval", function (data) { $("#digital09").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=11&VAR_tval", function (data) { $("#digital10").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=12&VAR_tval", function (data) { $("#digital11").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=13&VAR_tval", function (data) { $("#digital12").attr("src", data+"?VAR_tval"); });
-			$.get("/readdigital.html?input=14&VAR_tval", function (data) { $("#digital13").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=01&amp;value=VAR_tval", function (data) { $("#digital00").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=02&amp;value=VAR_tval", function (data) { $("#digital01").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=03&amp;value=VAR_tval", function (data) { $("#digital02").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=04&amp;value=VAR_tval", function (data) { $("#digital03").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=05&amp;value=VAR_tval", function (data) { $("#digital04").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=06&amp;value=VAR_tval", function (data) { $("#digital05").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=07&amp;value=VAR_tval", function (data) { $("#digital06").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=08&amp;value=VAR_tval", function (data) { $("#digital07").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=09&amp;value=VAR_tval", function (data) { $("#digital08").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=10&amp;value=VAR_tval", function (data) { $("#digital09").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=11&amp;value=VAR_tval", function (data) { $("#digital10").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=12&amp;value=VAR_tval", function (data) { $("#digital11").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=13&amp;value=VAR_tval", function (data) { $("#digital12").attr("src", data+"?VAR_tval"); });
+			$.get("/readdigital.html?input=14&amp;value=VAR_tval", function (data) { $("#digital13").attr("src", data+"?VAR_tval"); });
 
 			
 		}, VAR_serial_update ); // refresh every 2000 milliseconds

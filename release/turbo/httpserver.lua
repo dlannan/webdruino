@@ -199,6 +199,7 @@ end
 --- Handles incoming headers. The HTTPHeaders class is used to parse
 -- request headers.
 function httpserver.HTTPConnection:_on_headers(data)
+
     local headers
     local status, headers = xpcall(httputil.HTTPParser, 
         _on_headers_error_handler, data, httputil.hdr_t["HTTP_REQUEST"])

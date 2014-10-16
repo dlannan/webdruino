@@ -34,7 +34,6 @@ int snprintf(char *s, size_t n, const char *format, ...);
 pid_t fork();
 pid_t wait(int32_t *status);
 pid_t getpid();
-
 ]]
 
 

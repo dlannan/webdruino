@@ -20,7 +20,7 @@ local log =         require "turbo.log"
 local util =        require "turbo.util"
 local iostream =    require "turbo.iostream"
 local ioloop =      require "turbo.ioloop"
-local socket =      require "network.lib_socket"
+--local socket =      require "network.lib_socket"
 --local tcp =      	require "network.lib_tcp"
 local sockutil =    require "turbo.sockutil"
 local crypto =      require "turbo.crypto"
@@ -29,16 +29,16 @@ local bit =         require "bit"
 require "turbo.cdef"
 require "turbo.3rdparty.middleclass"
 
-local SOL_SOCKET =  socket.SOL_SOCKET
-local SO_RESUSEADDR = socket.SO_REUSEADDR
-local O_NONBLOCK =  socket.O_NONBLOCK
-local F_SETFL =     socket.F_SETFL
-local F_GETFL =     socket.F_GETFL
-local SOCK_STREAM = socket.SOCK_STREAM
-local INADDRY_ANY = socket.INADDR_ANY
-local AF_INET =     socket.AF_INET
-local EWOULDBLOCK = socket.EWOULDBLOCK
-local EAGAIN =      socket.EAGAIN
+-- local SOL_SOCKET =  socket.SOL_SOCKET
+-- local SO_RESUSEADDR = socket.SO_REUSEADDR
+-- local O_NONBLOCK =  socket.O_NONBLOCK
+-- local F_SETFL =     socket.F_SETFL
+-- local F_GETFL =     socket.F_GETFL
+-- local SOCK_STREAM = socket.SOCK_STREAM
+-- local INADDRY_ANY = socket.INADDR_ANY
+-- local AF_INET =     socket.AF_INET
+-- local EWOULDBLOCK = socket.EWOULDBLOCK
+-- local EAGAIN =      socket.EAGAIN
 
 local tcpserver = {}  -- tcpserver namespace
 

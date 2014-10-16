@@ -179,6 +179,7 @@ do
 
   -- Get file from directory or from cache
   dir_loadfile = function(path)
+  print("Path: ", path)
     local dir, filename = Match(path, [[(.-)([^/\]+)$]])
     local dir_files = dirs[dir]
     local is_watch = true
@@ -211,6 +212,7 @@ do
   -- Process request
   local function process_request(req)
     local path = req:getvar"PATH_TRANSLATED"
+	print("Path...", path)
     if not path then
       -- nginx: fastcgi_param  PATH_TRANSLATED  $document_root$fastcgi_path_info$fastcgi_script_name;
       error("PATH_TRANSLATED expected")
@@ -241,7 +243,7 @@ do
 
     if not eof and fd:read(buffer_in) then
       local request_id = fcgi_decode(buffer_in, chan)
-
+print("ReqId:" , request_id)
       while request_id do
         local req = chan[request_id]
 
@@ -295,6 +297,7 @@ end
 
 local saddr = sock.addr()
 for port, host in pairs(bind) do
+print(port, host)
   local fd = sock.handle()
   assert(fd:socket())
   assert(fd:sockopt("reuseaddr", 1))

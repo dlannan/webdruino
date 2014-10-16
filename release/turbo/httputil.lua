@@ -154,6 +154,7 @@ end
 -- @param UF_prop (Number) Available fields described in the httputil.UF table.
 -- @return nil if not found, else the string value is returned.
 function httputil.HTTPParser:get_url_field(UF_prop)
+
     if not self.url then
         self:get_url()
     end

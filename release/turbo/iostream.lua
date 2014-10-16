@@ -26,29 +26,41 @@ local log =         require "turbo.log"
 local ioloop =      require "turbo.ioloop"
 local deque =       require "turbo.structs.deque"
 local buffer =      require "turbo.structs.buffer"
-local socket =      require "network.lib_socket"
 local sockutils =   require "turbo.sockutil"
 local util =        require "turbo.util"
 -- __Global value__ _G.TURBO_SSL allows the user to enable the SSL module.
 local crypto =      require "turbo.crypto"
 local bit =         require "bit"
 local ffi =         require "ffi"
+
+local sys = 		require("sys")
+local mem = 		sys.mem
+
 require "turbo.cdef"
 require "turbo.3rdparty.middleclass"
-local SOL_SOCKET =  socket.SOL_SOCKET
-local SO_RESUSEADDR =   socket.SO_REUSEADDR
-local O_NONBLOCK =  socket.O_NONBLOCK
-local F_SETFL =     socket.F_SETFL
-local F_GETFL =     socket.F_GETFL
-local SOCK_STREAM = socket.SOCK_STREAM
-local INADDRY_ANY = socket.INADDR_ANY
-local AF_INET =     socket.AF_INET
-local AF_INET6 =    socket.AF_INET6
-local AF_UNSPEC =   socket.AF_UNSPEC
-local EWOULDBLOCK = EWOULDBLOCK
-local EINPROGRESS = EINPROGRESS
-local ECONNRESET = ECONNRESET
-local EAGAIN =      EAGAIN
+
+
+ffi.cdef [[
+void mem_fromffi(void *_mb, void *memptr, int memsize);
+]]
+
+local luasys = ffi.load("sys")
+
+-- local SOL_SOCKET =  socket.SOL_SOCKET
+-- local SO_RESUSEADDR =   socket.SO_REUSEADDR
+-- local O_NONBLOCK =  socket.O_NONBLOCK
+-- local F_SETFL =     socket.F_SETFL
+-- local F_GETFL =     socket.F_GETFL
+-- local SOCK_STREAM = socket.SOCK_STREAM
+-- local INADDRY_ANY = socket.INADDR_ANY
+-- local AF_INET =     socket.AF_INET
+-- local AF_INET6 =    socket.AF_INET6
+-- local AF_UNSPEC =   socket.AF_UNSPEC
+-- local EWOULDBLOCK = EWOULDBLOCK
+-- local EINPROGRESS = EINPROGRESS
+-- local ECONNRESET = ECONNRESET
+-- local EAGAIN =      EAGAIN
+
 local libtffi_loaded, libtffi = pcall(ffi.load, "tffi_wrap")
 if not libtffi_loaded then
     libtffi_loaded, libtffi = 
@@ -65,6 +77,7 @@ local bitor, bitand, min, max =  bit.bor, bit.band, math.min, math.max
 -- his own socket buffer size to be used by the module. Defaults to 4096 bytes.
 _G.TURBO_SOCKET_BUFFER_SZ = _G.TURBO_SOCKET_BUFFER_SZ or 4096
 local TURBO_SOCKET_BUFFER_SZ = _G.TURBO_SOCKET_BUFFER_SZ
+
 local buf = ffi.new("int8_t[?]", _G.TURBO_SOCKET_BUFFER_SZ)
 local buf_ptr = ffi.cast("void *", buf)
 
@@ -90,7 +103,7 @@ iostream.IOStream = class('IOStream')
 -- held in internal buffer before flushing must occur. 
 -- If none is set, 104857600 are used as default.
 function iostream.IOStream:initialize(fd, io_loop, max_buffer_size)
-    self.socket = assert(fd, "argument #1, fd, is not a number.")
+    self.socket = fd -- assert(fd, "argument #1, fd, is not a number.")
     self.io_loop = io_loop or ioloop.instance()
     self.max_buffer_size = max_buffer_size or 104857600
     self._read_buffer = buffer(1024)
@@ -103,10 +116,7 @@ function iostream.IOStream:initialize(fd, io_loop, max_buffer_size)
     self._pending_callbacks = 0
     self._read_until_close = false
     self._connecting = false
-    local rc, msg = socket.set_nonblock(self.socket)
-    if (rc == -1) then
-        error("[iostream.lua] " .. msg)
-    end
+	assert(fd:nonblocking(true))
 end
 
 --- Connect to a address without blocking.
@@ -356,7 +366,7 @@ end
 -- Call close callback if set.
 function iostream.IOStream:close()
     if self.socket then
-        --log.devel("[iostream.lua] Closing socket " .. self.socket)
+        --log.devel("[iostream.lua] Closing socket " , self.socket)
         if self._read_until_close then
             local callback = self._read_callback
             local arg = self._read_callback_arg
@@ -370,7 +380,7 @@ function iostream.IOStream:close()
             self.io_loop:remove_handler(self.socket)
             self._state = nil
         end
-        socket.close(self.socket)
+        self.socket:close()
         self.socket = nil
         if self._close_callback and self._pending_callbacks == 0 then
             local callback = self._close_callback
@@ -417,7 +427,7 @@ function iostream.IOStream:_handle_events(fd, events)
         return
     end
     -- Handle different events.
-    if bitand(events, ioloop.READ) ~= 0 then
+    if bit.band(events, ioloop.READ) > 0 then
         self:_handle_read()
     end
     -- We must check if the socket has been closed after handling
@@ -425,8 +435,8 @@ function iostream.IOStream:_handle_events(fd, events)
     if not self.socket then 
         return
     end
-    if bitand(events, ioloop.WRITE) ~= 0 then
-        if self._connecting then 
+    if bit.band(events, ioloop.WRITE) > 0 then
+        if self._connecting == true then 
             self:_handle_connect()
         end
         self:_handle_write()    
@@ -434,9 +444,10 @@ function iostream.IOStream:_handle_events(fd, events)
     if not self.socket then 
         return
     end
-    if bitand(events, ioloop.ERROR) ~= 0 then
-        local rc, err = socket.get_socket_error(self.socket)
-        if rc == 0 then
+    if bit.band(events, ioloop.ERROR) > 0 then
+        local errno = fd:sockopt("error")
+		if errno ~= 0 then
+			error(sys.strerror(errno))
             self.error = err
         end
         -- We may have queued up a user callback in _handle_read or
@@ -447,13 +458,13 @@ function iostream.IOStream:_handle_events(fd, events)
     end
     local state = 0 --ioloop.ERROR
     if self:reading() then
-        state = bitor(state, ioloop.READ)
+        state = ioloop.READ
     end
     if self:writing() then
-        state = bitor(state, ioloop.WRITE)
+        state = ioloop.WRITE
     end
-    if state == ioloop.ERROR then
-        state = bitor(state, ioloop.READ)
+    if bit.band(state, ioloop.ERROR) > 0 then
+        state = bit.bor(state, ioloop.ERROR)
     end
     if state ~= self._state then
         assert(self._state, "no self._state set")
@@ -541,21 +552,19 @@ end
 -- @return Chunk of data.
 function iostream.IOStream:_read_from_socket()
     local errno
-    local sz = socket.recv(self.socket, buf_ptr, TURBO_SOCKET_BUFFER_SZ, 0)
-    if sz == -1 then
-        errno = socket.errno()
-        if errno == EWOULDBLOCK or errno == EAGAIN then
-            return nil
-        else
-            local fd = self.socket
-            self:close()
-            error(string.format( "Error when reading from socket %d. Errno: %d. %s  %d",
-									fd, errno, socket.errortext(errno), sz))
-        end
-    end
-    if sz == 0 then
-        self:close()
-        return nil
+	local sz = TURBO_SOCKET_BUFFER_SZ
+
+	local fd = self.socket
+	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', buf)))
+	local res, num_bytes = fd:recvb(lptr, sz)
+	---print("Recieving...", buf)
+    --local sz = sock.recv(self.socket, buf_ptr, TURBO_SOCKET_BUFFER_SZ, 0)
+    if res == false or res == nil then
+        errno = fd:sockopt("error")
+		if errno ~= 0 then
+		  error(sys.strerror(errno))
+		end
+		return nil, 0
     end
     return buf, sz
 end
@@ -685,34 +694,27 @@ function iostream.IOStream:_handle_write_nonconst()
     local errno, fd
     local ptr, sz = self._write_buffer:get()
     local buf = ptr + self._write_buffer_offset
-    local num_bytes = tonumber(socket.send(
-        self.socket, 
-        buf, 
-        self._write_buffer_size, 
-        0))
-    if num_bytes == -1 then
-        errno = socket.errno()
-        if errno == EWOULDBLOCK or errno == EAGAIN then
-            return
-        elseif errno == ECONNRESET then
-            -- Connection reset. Close the socket.
-            fd = self.socket
-            self:close()
-            log.warning(string.format(
-                "Connection closed on fd %d.", 
-                fd))
-            return
-        end
-        fd = self.socket                
-        self:close()
-        error(string.format("Error when writing to fd %d, %s", 
-            fd, 
-            socket.strerror(errno)))
+	
+	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', buf)))	
+	local fd = self.socket
+    -- local res, num_bytes = fd:send(ffi.string(buf, sendsize))
+    local res, num_bytes = fd:sendb(lptr, sz)
+	
+---print(")))))))))))))))) Sending... ", res, sendsize, num_bytes, lptr) 
+    if res == false then
+		local errno = fd:sockopt("error")
+		self:close()
+		if errno ~= 0 then
+			error(sys.strerror(errno))
+			return
+		end       
     end
+	
     if num_bytes == 0 then
         return
     end
-    self._write_buffer_offset = self._write_buffer_offset + num_bytes
+
+	self._write_buffer_offset = self._write_buffer_offset + num_bytes
     self._write_buffer_size = self._write_buffer_size - num_bytes
     if self._write_buffer_size == 0 then
         -- Buffer reached end. Reset offset and size.
@@ -735,30 +737,22 @@ function iostream.IOStream:_handle_write_const()
     local buf, sz = self._const_write_buffer:get()
     local ptr = buf + self._write_buffer_offset
     local _sz = sz - self._write_buffer_offset
-    local num_bytes = socket.send(
-        self.socket, 
-        ptr, 
-        _sz, 
-        0)
-    if num_bytes == -1 then
-        errno = socket.errno()
-        if errno == EWOULDBLOCK or errno == EAGAIN then
-            return
-        elseif errno == ECONNRESET then
-            -- Connection reset. Close the socket.
-            fd = self.socket
-            self:close()
-            log.warning(string.format(
-                "Connection closed on fd %d.", 
-                fd))
-            return
-        end
-        fd = self.socket                
-        self:close()
-        error(string.format("Error when writing to fd %d, %s", 
-            fd, 
-            socket.strerror(errno)))
+	
+	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', buf)))	
+	local fd = self.socket
+    -- local res, num_bytes = fd:send(ffi.string(buf, sendsize))
+    local res, num_bytes = fd:sendb(lptr, sz)
+	
+    if res == false or res == nil then
+		local errno = fd:sockopt("error")
+		self:close()
+		if errno ~= 0 then
+			error(sys.strerror(errno))
+			return
+		end       
+		 num_bytes = 0
     end
+	
     if num_bytes == 0 then
         return
     end
@@ -796,7 +790,7 @@ function iostream.IOStream:_add_io_state(state)
     if not self._state then
         self._state = state --bitor(ioloop.ERROR, state)
         self.io_loop:add_handler(self.socket, self._state, self._handle_events, self)
-    elseif bitand(self._state, state) == 0 then
+    elseif bit.band(self._state, state) == 0 then
         self._state = bitor(self._state, state)
         self.io_loop:update_handler(self.socket, self._state)
     end 

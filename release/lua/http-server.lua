@@ -29,11 +29,6 @@ package.cpath = package.cpath..";../?.dll"
 -- ***********************************************************************
 
 local ffi = require("ffi")
-local util = require "lib_util"
-local socket = require "lib_socket"
-local tcp = require "lib_tcp"
-
-local poll = require "lib_poll"
 local bit = require("bit")
 local floor = math.floor
 
@@ -44,7 +39,7 @@ local cmd = require "commands"
 -- RS232 Setup for interface 
 
 rs232 = require("sys-comm")
-bauds = { 9600, 19200, 38400, 57600, 115200 }
+bauds 			= { 9600, 19200, 38400, 57600, 115200 }
 baud_rate 		= 1
 serial_name 	= "COM5"
 serial_update 	= 2000
@@ -118,7 +113,7 @@ end
 local AnalogHandler = class("AnalogHandler", turbo.web.RequestHandler)
 function AnalogHandler:get(data)
 	
-	local input = tonumber(self:get_argument("input", "1", true))
+	local input = tonumber(self:get_argument("input", 1, true))
 	if input > 0 and input < 5 then
 		self:write(tostring(analog_output[input]))
 	else
@@ -156,7 +151,7 @@ end
 -- Handler that takes a single argument 'username'
 local CommHandler = class("CommHandler", turbo.web.RequestHandler)
 function CommHandler:get(data)
-	local c = util.milliSeconds()
+	local c = sys.msec()
 	
 	cmd:ReadAnalog()
 	cmd:ReadDigital()

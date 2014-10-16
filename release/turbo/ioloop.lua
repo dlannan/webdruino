@@ -30,12 +30,14 @@
 local log = require "turbo.log"
 local util = require "turbo.util"
 local signal = require "turbo.signal"
-local socket = require "network.lib_socket"
+-- local socket = require "network.lib_socket"
 local coctx = require "turbo.coctx"
 local ffi = require "ffi"
 require "turbo.3rdparty.middleclass"
 
-local poll = require "lib_poll"
+-- local poll = require "lib_poll"
+local sys = require"sys"
+local sock = require"sys.sock"
 
 local unpack = util.funpack
 local ioloop = {} -- ioloop namespace
@@ -48,15 +50,17 @@ local ioloop = {} -- ioloop namespace
     -- epoll_ffi = require 'turbo.epoll_ffi'
     -- -- Populate global with Epoll module constants
 		
-ioloop.READ 	= bit.bor(POLLIN, POLLOUT)
-ioloop.WRITE 	= POLLOUT
-ioloop.PRI 		= POLLPRI
-ioloop.ERROR 	= bit.bor(POLLERR, POLLHUP)
--- else
-    -- -- No poll modules found. Break execution and give error.
-    -- error("Could not load a poll module. Make sure you are running this with \
-        -- LuaJIT. Standard Lua is not supported.")
--- end
+ioloop.READ 	= 0x001  --bit.bor(POLLIN, POLLOUT)
+ioloop.WRITE 	= 0x002  --POLLOUT
+ioloop.PRI 		= 0x004  --POLLPRI
+ioloop.ACCEPT	= 0x008
+
+ioloop.ERROR	= 0xf00
+--ioloop.ERROR 	= 'e'  --bit.bor(POLLERR, POLLHUP)
+
+ioloop.BUFER_OUT_SIZE 	= 32768
+ioloop.BUFER_IN_SIZE 	= 8192
+
 
 --- Create or get the global IOLoop instance.
 -- Multiple calls to this function returns the same IOLoop.
@@ -69,6 +73,30 @@ function ioloop.instance()
         return _G.io_loop_instance
     end
 end
+
+local event_queue 		= nil
+
+-- Accept new client
+local function socket_handler(evq, _evobj, _fd, _evid, eof)
+
+	---print("Processing Handler: =========", _evid, _fd, _, eof)	
+	local io_inst = ioloop.instance()
+	local pevents = 0
+	if _evid == 'accept' then pevents = ioloop.ACCEPT end
+	if _evid == 'connect' then pevents = ioloop.READ end	
+	if _evid == 'r' then pevents = ioloop.READ end
+	if _evid == 'w' then pevents = ioloop.WRITE end	
+	io_inst._event_called[_fd] = { fd=_fd, evid=_evid, revents=pevents }  
+	-- io_inst:_run_handler(_fd, pevents)
+end
+
+function stop_system()
+
+	event_queue:stop()
+	local io_inst = _G.io_loop_instance
+	io_inst._stopped = true
+end	
+
 
 --- IOLoop is a level triggered I/O loop, with additional support for timeout
 -- and time interval callbacks.
@@ -84,15 +112,34 @@ function ioloop.IOLoop:initialize()
     self._timeouts = {}
     self._intervals = {}
     self._callbacks = {}
+	self._event_called = {}
     self._running = false
     self._stopped = false
-    -- Set the most fitting poll implementation. The API's are all unified.
-    if _poll_implementation == 'epoll_ffi' then
-        self._poll = poll
-    end
+	
     -- Must be set to avoid stopping execution when SIGPIPE is recieved.
-    signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+    --signal.signal(signal.SIGPIPE, signal.SIG_IGN)
+	
+	if event_queue == nil then
+		event_queue = assert(sys.event_queue())
+	end
+	
+	-- Quit by Ctrl-C
+	assert(event_queue:add_signal("INT", stop_system))
 end
+
+-- local function HandlerHandler(_evq, _evid, _fd, _events)
+
+	-- local io_inst = ioloop.instance()
+	-- local pevents = 0
+	-- if _events == 'r' then pevents = ioloop.READ end
+	-- if _events == 'w' then pevents = ioloop.WRITE end
+	-- if _events == 'accept' then pevents = ioloop.READ end
+	-- if _events == 'connect' then pevents = ioloop.READ end
+	
+	-- --print("Handler: ", _fd, _evq, _evid, pevents, _events)
+	-- --io_inst:_run_handler(_fd, pevents)
+	-- io_inst._event_called[_fd] = { fd=_fd, evid=_evid, revents=pevents }  
+-- end
 
 --- Add handler function for given event mask on fd.
 -- @param fd (Number) File descriptor to bind handler for.
@@ -103,8 +150,29 @@ end
 -- this as first argument if set.
 -- @return (Boolean) true if successfull else false.
 function ioloop.IOLoop:add_handler(fd, events, handler, arg)
-	
-    local rc, errno = poll.add_fd(fd, events) --bit.bor(events, ioloop.ERROR))
+
+---print("Adding Handler: }}}}}}}", fd, events, handler, arg)
+	local evid = 0
+	if bit.band(ioloop.WRITE, events) > 0 then
+		evid = assert(event_queue:add_socket(fd, 'w', socket_handler))	
+		if not evid then
+			error(SYS_ERR)
+		end
+	end	
+	if bit.band(ioloop.READ, events) > 0 then
+		evid = assert(event_queue:add_socket(fd, 'r', socket_handler))	
+		if not evid then
+			error(SYS_ERR)
+		end
+	end
+	if bit.band(ioloop.ACCEPT, events) > 0 then
+		evid = assert(event_queue:add_socket(fd, 'r', socket_handler))	
+		if not evid then
+			error(SYS_ERR)
+		end
+	end
+    
+	--local rc, errno = poll.add_fd(fd, events) --bit.bor(events, ioloop.ERROR))
     -- if rc ~= 0 then
         -- log.notice(
             -- string.format(
@@ -112,7 +180,7 @@ function ioloop.IOLoop:add_handler(fd, events, handler, arg)
                 -- socket.strerror(errno)))
         -- return false
     -- end
-    self._handlers[fd] = {handler, arg}
+    self._handlers[fd] = {handler, arg, evid}
     return true
 end
 
@@ -122,7 +190,31 @@ end
 -- ioloop.READ and ioloop.WRITE. Multiple bits can be AND'ed together.
 -- @return (Boolean) true if successfull else false.
 function ioloop.IOLoop:update_handler(fd, events)
-    local rc, errno = poll.modify_fd(fd, events) --bit.bor(events, ioloop.ERROR))
+
+	local lhandler = self._handlers[fd]
+	if not lhandler then return false end
+	if not event_queue then return false end
+	local pevent = 'r'
+
+---print("Modding Handler: {{{{{{{{", fd, events)	
+if events == 0 then return end
+
+	if bit.band(ioloop.READ, events) > 0 then 
+		pevent = 'r' 
+	end
+	if bit.band(ioloop.WRITE, events) > 0 then 
+		pevent = 'w' 
+	end
+	if bit.band(ioloop.ACCEPT, events) > 0 then 
+		pevent = 'r' 
+	end
+	
+	local evid = lhandler[3]
+	if event_queue and evid then 
+		assert(event_queue:mod_socket(evid, pevent)) 
+	end
+	
+    --local rc, errno = poll.modify_fd(fd, events) --bit.bor(events, ioloop.ERROR))
     -- if rc ~= 0 then
         -- log.notice(
             -- string.format(
@@ -137,10 +229,17 @@ end
 -- @param fd (Number) File descriptor to remove handler from.
 -- @return (Boolean) true if successfull else false.
 function ioloop.IOLoop:remove_handler(fd)   
-    if not self._handlers[fd] then
-        return
-    end
-    local rc, errno = poll.remove_fd(fd)
+
+	local lhandler = self._handlers[fd]
+	if not lhandler then return false end
+	if not event_queue then return false end
+	
+	if lhandler[3] ~= nil then
+		local evid = lhandler[3]
+		event_queue:del(evid)
+	end
+	
+    --local rc, errno = poll.remove_fd(fd)
     -- if rc ~= 0 then
         -- log.notice(
             -- string.format(
@@ -148,7 +247,11 @@ function ioloop.IOLoop:remove_handler(fd)
                 -- socket.strerror(errno)))
         -- return false
     -- end
+	
     self._handlers[fd] = nil
+	self._event_called[fd] = nil
+	fd:close()
+	
     return true
 end
 
@@ -326,27 +429,24 @@ function ioloop.IOLoop:start()
             self._stopped = false
             break
         end
+				
         if #self._callbacks > 0 then
             -- New callback has been scheduled for next iteration. Drop 
             -- timeout.
             poll_timeout = 0
         end
-		poll.timeout_set(poll_timeout)
-        local rc, events, num = poll.poll()
+		--poll.timeout_set(poll_timeout)
+        --local rc, events, num = poll.poll()
+
+		event_queue:loop(10)
+		
+		--print("polling....")
+
+		local events = self._event_called
 		-- loop all events, break loop as soon as possible
-		local served = 0
-		for i=1,num do
-			local evt = events[i-1].revents
-			if evt~= 0 then
-				local fd = events[i-1].fd
-                self:_run_handler(fd, evt)
-			end
-			if served == rc then break end -- break loop as soon as possible
+		for k,v in pairs(events) do
+			self:_run_handler(v.fd, v.revents)
 		end
-        if rc == -1 then
-            log.notice(string.format("[ioloop.lua] poll() returned errno %d", 
-                ffi.errno()))
-        end
     end
 end
 
@@ -385,16 +485,21 @@ end
 
 --- Error handler for IOLoop:_run_handler.
 local function _run_handler_error_handler(err)
+    log.stacktrace(debug.traceback())
     log.debug("[ioloop.lua] Handler error: " .. err)
 end
 
 --- Run callbacks protected with error handlers. Because errors can always
 -- happen! If a handler errors, the handler is removed from the IOLoop, and
 -- never called again.
+--function ioloop.IOLoop:_run_handler(evq, evid, fd, events)
 function ioloop.IOLoop:_run_handler(fd, events)
+
     local ok
     local handler = self._handlers[fd]
-    -- handler[1] = function.
+ 	--print("]]]]]]]]]]]]]]]  Handlers....", fd, events, handler)
+	
+	-- handler[1] = function.
     -- handler[2] = optional first argument for function.
     -- If there is no optional argument, do not add it as parameter to the
     -- function as that create a big nuisance for consumers of the API.

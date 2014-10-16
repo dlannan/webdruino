@@ -543,6 +543,51 @@ sock_connect (lua_State *L)
 }
 
 /*
+ * Arguments: sd_udata, {string | membuf_udata} ...
+ * Returns: [success/partial (boolean), count (number)]
+ */
+static int
+sock_sendb (lua_State *L)
+{
+  static const int o_flags[] = {
+    MSG_OOB, MSG_DONTROUTE, MSG_FASTOPEN
+  };
+  static const char *const o_names[] = {
+    "oob", "dontroute", "fastopen", NULL
+  };
+  sd_t sd = (sd_t) lua_unboxinteger(L, 1, SD_TYPENAME);
+  const struct sock_addr *to = !lua_isuserdata(L, 4) ? NULL
+   : checkudata(L, 4, SA_TYPENAME);
+  struct sys_buffer sb;
+  int nw;  /* number of chars actually send */
+  unsigned int i, flags = 0;
+
+  int memptr = lua_tointeger(L, 2);
+  const int len = luaL_checkinteger(L, 3);
+	
+  for (i = lua_gettop(L); i > 4; --i) {
+    flags |= o_flags[luaL_checkoption(L, i, NULL, o_names)];
+  }
+  sys_vm_leave(L);
+  do nw = !to ? send(sd, (char *)memptr, len, flags) 
+   : sendto(sd, (char *)memptr, len, flags, &to->u.addr, to->addrlen);
+#ifndef _WIN32
+  while (nw == -1 && sys_eintr());
+#else
+  while (0);
+#endif
+  sys_vm_enter(L);
+  if (nw == -1) {
+    if (!SYS_IS_EAGAIN(SYS_ERRNO))
+      return sys_seterror(L, 0);
+    nw = 0;
+  }
+  lua_pushboolean(L, ((size_t) nw == len));
+  lua_pushinteger(L, nw);
+  return 2;
+}
+
+/*
  * Arguments: sd_udata, {string | membuf_udata},
  *	[to (sock_addr_udata), options (string) ...]
  * Returns: [success/partial (boolean), count (number)]
@@ -569,7 +614,7 @@ sock_send (lua_State *L)
     flags |= o_flags[luaL_checkoption(L, i, NULL, o_names)];
   }
   sys_vm_leave(L);
-  do nw = !to ? send(sd, sb.ptr.r, sb.size, flags)
+  do nw = !to ? send(sd, sb.ptr.r, sb.size, flags) 
    : sendto(sd, sb.ptr.r, sb.size, flags, &to->u.addr, to->addrlen);
 #ifndef _WIN32
   while (nw == -1 && sys_eintr());
@@ -587,6 +632,73 @@ sock_send (lua_State *L)
   lua_pushboolean(L, ((size_t) nw == sb.size));
   lua_pushinteger(L, nw);
   return 2;
+}
+
+/*
+ * Arguments: sd_udata, [count (number) | membuf_udata,
+ *	from (sock_addr_udata), options (string) ...]
+ * Returns: [string | count (number) | false (EAGAIN)]
+ */
+static int
+sock_recvb (lua_State *L)
+{
+  static const int o_flags[] = {
+    MSG_OOB, MSG_PEEK,
+#ifndef _WIN32
+    MSG_WAITALL
+#endif
+  };
+  static const char *const o_names[] = {
+    "oob", "peek",
+#ifndef _WIN32
+    "waitall",
+#endif
+    NULL
+  };
+  sd_t sd = (sd_t) lua_unboxinteger(L, 1, SD_TYPENAME);
+  int memptr = lua_tointeger(L, 2);
+  size_t n = luaL_checkinteger(L, 3);
+  struct sock_addr *from = !lua_isuserdata(L, 3) ? NULL
+   : checkudata(L, 4, SA_TYPENAME);
+  struct sockaddr *sap = NULL;
+  const size_t len = n;  /* how much total to read */
+  socklen_t *slp = NULL;
+  size_t rlen;  /* how much to read */
+  int nr;  /* number of bytes actually read */
+  struct sys_thread *td = sys_thread_get();
+  unsigned int i, flags = 0;
+  int res = 0;
+  
+  for (i = lua_gettop(L); i > 3; --i) {
+    flags |= o_flags[luaL_checkoption(L, i, NULL, o_names)];
+  }
+  if (from) {
+    sap = &from->u.addr;
+    slp = &from->addrlen;
+  }
+  do {
+    rlen = (n <= len) ? n : len;
+    if (td) sys_vm2_leave(td);
+#ifndef _WIN32
+    do nr = recvfrom(sd, (char *)memptr, rlen, flags, sap, slp);
+    while (nr == -1 && sys_eintr());
+#else
+    nr = recvfrom(sd, (char *)memptr, rlen, flags, sap, slp);
+#endif
+    if (td) sys_vm2_enter(td);
+    if (nr == -1) break;
+    n -= nr;  /* still have to read `n' bytes */
+  } while (n != 0L && nr == (int) rlen);  /* until end of count or eof */
+
+  if (nr <= 0 && len == n) {
+    if (nr && SYS_IS_EAGAIN(SYS_ERRNO))
+      lua_pushboolean(L, 0);
+    else res = -1;
+  }
+  if (td) sys_thread_check(td, L);
+  if (!res) return 1;
+  if (!nr) return 0;
+  return sys_seterror(L, 0);
 }
 
 /*
@@ -783,7 +895,6 @@ sock_sendfile (lua_State *L)
 
 #endif
 
-
 /*
  * Arguments: sd_udata, {string | membuf_udata} ...
  * Returns: [success/partial (boolean), count (number)]
@@ -918,7 +1029,9 @@ static luaL_Reg sock_meth[] = {
   {"listen",		sock_listen},
   {"accept",		sock_accept},
   {"connect",		sock_connect},
+  {"sendb",		sock_sendb},
   {"send",		sock_send},
+  {"recvb",		sock_recvb},
   {"recv",		sock_recv},
 #ifdef USE_SENDFILE
   {"sendfile",		sock_sendfile},

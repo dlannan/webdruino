@@ -1,10 +1,10 @@
 
-local util = require "lib_util"
+local sys = require "sys"
 
 -- ***********************************************************************
 
 function getVal()
-	return util.milliSeconds()
+	return sys.msec()
 end
 
 -- ***********************************************************************

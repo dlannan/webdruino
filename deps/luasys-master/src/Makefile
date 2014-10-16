@@ -6,7 +6,7 @@ LUA= /opt/lua-5.2.3
 T= sys.so
 A= libluasys.a
 
-COPT= -O2 -fPIC -DNDEBUG
+COPT= -O2 -fPIC -DNDEBUG -D_WIN32
 CWARNS= -W -Wall -Wextra -pedantic \
 	-Waggregate-return \
 	-Wbad-function-cast \
@@ -51,7 +51,7 @@ ifneq (,$(findstring Windows,$(OS)))
     T= sys.dll
     A= sys.lib
 
-    MYCFLAGS= -DLUA_BUILD_AS_DLL
+    MYCFLAGS= -DLUA_BUILD_AS_DLL 
     MYLDFLAGS= -s -shared
     LIBS= ../../LuaJIT-2.0.3/src/libluajit.a -lkernel32 -luser32 -lwinmm -lshell32 -ladvapi32 -lws2_32
     OBJS+= isa/isapi/isapi_dll.o

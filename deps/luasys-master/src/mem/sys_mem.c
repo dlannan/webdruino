@@ -743,6 +743,16 @@ mem_tostring (lua_State *L)
   return 1;
 }
 
+static int 
+mem_fromffi(lua_State *L)
+{
+	struct membuf *mb = checkudata(L, 1, MEM_TYPENAME);
+	int memptr = lua_tointeger(L, 2);
+	const int len = luaL_checkinteger(L, 3);
+
+	lua_settop(L, 1);
+	return memcpy(mb->data, (char *)memptr, len) ? 1 : 0;
+}
 
 #include "membuf.c"
 
@@ -752,6 +762,7 @@ static luaL_Reg mem_meth[] = {
   {"typesize",		mem_typesize},
   {"alloc",		mem_alloc},
   {"realloc",		mem_realloc},
+  {"fromffi", 	mem_fromffi},
 #ifdef USE_MMAP
   {"map",		mem_map},
   {"sync",		mem_sync},
