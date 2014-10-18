@@ -696,14 +696,18 @@ sock_recvb (lua_State *L)
     else 
 	  lua_pushinteger(L, nr);
   }
-	else 
-	  lua_pushinteger(L, nr);
 
+  if(nr) 
+  {
+	lua_pushinteger(L, nr);
+	return 1;
+  }
+   
   if (td) sys_thread_check(td, L);
-  return 1;
+  
   ///if (!res) return 1;
   ///if (!nr) return 0;
-  //return sys_seterror(L, 0);
+  return sys_seterror(L, 0);
 }
 
 /*

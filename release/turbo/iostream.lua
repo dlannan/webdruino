@@ -553,7 +553,11 @@ function iostream.IOStream:_read_from_socket()
 	--print("Recieving...", buf, res, TURBO_SOCKET_BUFFER_SZ)
     --local sz = sock.recv(self.socket, buf_ptr, TURBO_SOCKET_BUFFER_SZ, 0)
 
-    if nsz == false or nsz == nil or nsz == 0 then
+	if nsz == false then
+		return nil, 0
+	end
+	
+    if nsz <= 0 then
         errno = fd:sockopt("error")
 		self:close()
 		if errno ~= 0 then
