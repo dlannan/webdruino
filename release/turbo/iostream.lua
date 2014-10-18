@@ -39,13 +39,6 @@ local mem = 		sys.mem
 require "turbo.cdef"
 require "turbo.3rdparty.middleclass"
 
-
-ffi.cdef [[
-void mem_fromffi(void *_mb, void *memptr, int memsize);
-]]
-
-local luasys = ffi.load("sys")
-
 -- local SOL_SOCKET =  socket.SOL_SOCKET
 -- local SO_RESUSEADDR =   socket.SO_REUSEADDR
 -- local O_NONBLOCK =  socket.O_NONBLOCK
@@ -555,18 +548,20 @@ function iostream.IOStream:_read_from_socket()
 	local sz = TURBO_SOCKET_BUFFER_SZ
 
 	local fd = self.socket
-	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', buf)))
-	local res, num_bytes = fd:recvb(lptr, sz)
-	---print("Recieving...", buf)
+	local lptr = tonumber(ffi.cast('intptr_t', buf_ptr))
+	local nsz = fd:recvb(lptr, sz)
+	--print("Recieving...", buf, res, TURBO_SOCKET_BUFFER_SZ)
     --local sz = sock.recv(self.socket, buf_ptr, TURBO_SOCKET_BUFFER_SZ, 0)
-    if res == false or res == nil then
+
+    if nsz == false or nsz == nil or nsz == 0 then
         errno = fd:sockopt("error")
+		self:close()
 		if errno ~= 0 then
 		  error(sys.strerror(errno))
 		end
 		return nil, 0
     end
-    return buf, sz
+    return buf, nsz
 end
 
 --- Read from the socket and append to the read buffer. 
@@ -698,7 +693,7 @@ function iostream.IOStream:_handle_write_nonconst()
 	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', buf)))	
 	local fd = self.socket
     -- local res, num_bytes = fd:send(ffi.string(buf, sendsize))
-    local res, num_bytes = fd:sendb(lptr, sz)
+    local res, num_bytes = fd:sendb(lptr, self._write_buffer_size)
 	
 ---print(")))))))))))))))) Sending... ", res, sendsize, num_bytes, lptr) 
     if res == false then
@@ -738,10 +733,10 @@ function iostream.IOStream:_handle_write_const()
     local ptr = buf + self._write_buffer_offset
     local _sz = sz - self._write_buffer_offset
 	
-	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', buf)))	
+	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', ptr)))	
 	local fd = self.socket
     -- local res, num_bytes = fd:send(ffi.string(buf, sendsize))
-    local res, num_bytes = fd:sendb(lptr, sz)
+    local res, num_bytes = fd:sendb(lptr, _sz)
 	
     if res == false or res == nil then
 		local errno = fd:sockopt("error")

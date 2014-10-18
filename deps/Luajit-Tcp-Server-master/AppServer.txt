@@ -1,6 +1,0 @@
-81%  recv
-12%  send
- 6%  poll
- 0%  accept
- 0%  expand_fds
- 0%  close

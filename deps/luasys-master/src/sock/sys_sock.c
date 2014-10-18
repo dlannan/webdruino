@@ -693,12 +693,17 @@ sock_recvb (lua_State *L)
   if (nr <= 0 && len == n) {
     if (nr && SYS_IS_EAGAIN(SYS_ERRNO))
       lua_pushboolean(L, 0);
-    else res = -1;
+    else 
+	  lua_pushinteger(L, nr);
   }
+	else 
+	  lua_pushinteger(L, nr);
+
   if (td) sys_thread_check(td, L);
-  if (!res) return 1;
-  if (!nr) return 0;
-  return sys_seterror(L, 0);
+  return 1;
+  ///if (!res) return 1;
+  ///if (!nr) return 0;
+  //return sys_seterror(L, 0);
 }
 
 /*

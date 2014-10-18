@@ -365,6 +365,8 @@ function httputil.HTTPParser:parse_header(hdr_str, hdr_t)
     end
     self.tpw = tpw
     if self.tpw.parser.http_errno ~= 0 or self.tpw.parsed_sz == 0 then
+	print("HDR: ", hdr_str)
+	 log.stacktrace(debug.traceback())
         error(
             string.format(
                 "libturbo_parser could not parse HTTP header. %s %s", 

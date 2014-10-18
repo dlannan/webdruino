@@ -438,7 +438,7 @@ function ioloop.IOLoop:start()
 		--poll.timeout_set(poll_timeout)
         --local rc, events, num = poll.poll()
 
-		event_queue:loop(10)
+		event_queue:loop(50)
 		
 		--print("polling....")
 
