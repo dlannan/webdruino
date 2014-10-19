@@ -558,7 +558,6 @@ sock_sendb (lua_State *L)
   sd_t sd = (sd_t) lua_unboxinteger(L, 1, SD_TYPENAME);
   const struct sock_addr *to = !lua_isuserdata(L, 4) ? NULL
    : checkudata(L, 4, SA_TYPENAME);
-  struct sys_buffer sb;
   int nw;  /* number of chars actually send */
   unsigned int i, flags = 0;
 
@@ -582,7 +581,7 @@ sock_sendb (lua_State *L)
       return sys_seterror(L, 0);
     nw = 0;
   }
-  lua_pushboolean(L, ((size_t) nw == len));
+  lua_pushboolean(L, (nw == len));
   lua_pushinteger(L, nw);
   return 2;
 }
@@ -667,7 +666,6 @@ sock_recvb (lua_State *L)
   int nr;  /* number of bytes actually read */
   struct sys_thread *td = sys_thread_get();
   unsigned int i, flags = 0;
-  int res = 0;
   
   for (i = lua_gettop(L); i > 3; --i) {
     flags |= o_flags[luaL_checkoption(L, i, NULL, o_names)];
@@ -704,9 +702,6 @@ sock_recvb (lua_State *L)
   }
    
   if (td) sys_thread_check(td, L);
-  
-  ///if (!res) return 1;
-  ///if (!nr) return 0;
   return sys_seterror(L, 0);
 }
 
