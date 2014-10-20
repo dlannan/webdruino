@@ -740,7 +740,7 @@ function iostream.IOStream:_handle_write_const()
 	local lptr = tonumber(ffi.cast('intptr_t', ffi.cast('void *', ptr)))	
 	local fd = self.socket
     -- local res, num_bytes = fd:send(ffi.string(buf, sendsize))
-    local res, num_bytes = fd:sendb(lptr, _sz)
+    local res, num_bytes = fd:sendb(lptr, tonumber(_sz))
 	
     if res == false or res == nil then
 		local errno = fd:sockopt("error")
