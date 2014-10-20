@@ -8,20 +8,32 @@ with an initial timeline to have the components complete. This also allows us to
 components and change their priorities depending on demands and requests.
 -----------------------------------------------------------------------------------
 
-C01 - Complete Digital and Analog IO capability 
+C01 - Complete Digital and Analog IO capability 	- COMPLETE
 Estimate: 1 week.
   Includes the ability for webdruino server to read/write both types.
 -- Update: Some cleanup left, mostly done.
+----------------------------------------------------------------------
+-- Reading and writing of analog and digital is working.
+-- Need proper examples and some tutorials TBA
+----------------------------------------------------------------------
 
-C02 - Completion of WebDruino protocol
+C02 - Completion of WebDruino protocol				- PARTIAL
 Estimate: 1 week.
   Inital ASCII protocol is complete.
 -- Update: Mostly done. Will add extend methods.
+----------------------------------------------------------------------
+The protocol is complete. Although it needs documenting, and 
+an extension method described (for controls and SPI etc).
+----------------------------------------------------------------------
 
-C02a - Working build for Linux and OSX
+C02a - Working build for Linux and OSX				- STARTED
 Estimate: 1 week.
   Need to finish repairing Network Tcp Server (removal)
   Get LuaSys working on Linux/OSX and new changes to turbo.
+----------------------------------------------------------------------
+Started testing on Linux with new LuaSys dll. Various issues.
+Windows 64 bit built ok.
+----------------------------------------------------------------------
   
 C03 - Configuration for Digital and Analog pin assignment.
 Estimate: 2 weeks.
