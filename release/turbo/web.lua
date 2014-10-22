@@ -570,13 +570,13 @@ end
 
 function web.RequestHandler:_finish()
     if self._status_code == 200 then
-        -- log.success(string.format([[[web.lua] %d %s %s %s (%s) %dms]], 
-            -- self._status_code, 
-            -- response_codes[self._status_code],
-            -- self.request.headers:get_method(),
-            -- self.request.headers:get_url(),
-            -- self.request.remote_ip,
-            -- self.request:request_time()))
+        log.success(string.format([[[web.lua] %d %s %s %s (%s) %dms]], 
+            self._status_code, 
+            response_codes[self._status_code],
+            self.request.headers:get_method(),
+            self.request.headers:get_url(),
+            self.request.remote_ip,
+            self.request:request_time()))
     else
         log.warning(string.format([[[web.lua] %d %s %s %s (%s) %dms]], 
             self._status_code, 
@@ -655,10 +655,10 @@ function web._StaticWebCache:get_file(path)
         else
             self.files[path] = {buf}
         end
-        -- log.notice(string.format(
-            -- "[web.lua] Added %s (%d bytes) to static file cache.", 
-            -- path, 
-            -- tonumber(buf:len())))
+        log.notice(string.format(
+            "[web.lua] Added %s (%d bytes) to static file cache. ", 
+            path, 
+            tonumber(buf:len())))
         return 0, buf, mime
     else
         return -1, nil
@@ -739,7 +739,6 @@ end
 --- GET method for static file handling.
 -- @param path The path captured from request.
 function web.StaticFileHandler:get(path)
-
     local full_path
     if not self.file then
         if #self._url_args == 0 or self._url_args[1]:len() == 0 then
@@ -767,7 +766,6 @@ function web.StaticFileHandler:get(path)
         self:add_header("Cache-Control", "max-age=604800")
         self:add_header("Expires", os.date("!%a, %d %b %Y %X GMT", 
             (self.request._start_time / 1000) + 60*60*24*7))
-			
         self:flush(web.StaticFileHandler._headers_flushed_cb, self)
     else
         error(web.HTTPError(404)) -- Not found
@@ -789,10 +787,10 @@ function web.StaticFileHandler:head(path)
     local rc, buf, mime = STATIC_CACHE:get_file(full_path)
     if rc == 0 then
         if mime then
-            self:add_header("Content-Type", mime)
+            self:add_header("Content-Type", mime_type)
         end
         self:add_header("Content-Length", tonumber(buf:len()))
-	else
+    else
         error(web.HTTPError(404)) -- Not found
     end
 end

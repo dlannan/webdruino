@@ -20,9 +20,7 @@ local iostream =            require "turbo.iostream"
 local ioloop =              require "turbo.ioloop"
 local httputil =            require "turbo.httputil"
 local util =                require "turbo.util"
-
--- local socket =              require "network.lib_socket"
-
+local socket =              require "turbo.socket_ffi"
 local log =                 require "turbo.log"
 local http_response_codes = require "turbo.http_response_codes"
 local coctx =               require "turbo.coctx"
@@ -33,7 +31,7 @@ local crypto =              _G.TURBO_SSL and require "turbo.crypto"
 require "turbo.3rdparty.middleclass"
 
 local unpack = util.funpack
--- local AF_INET = socket.AF_INET
+local AF_INET = socket.AF_INET
 
 local async = {} -- async namespace
 

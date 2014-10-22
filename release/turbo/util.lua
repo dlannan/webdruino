@@ -22,15 +22,18 @@
 
 local ffi = require "ffi"
 local C = ffi.C
---local lutil = require "network.lib_util"
-local sys = require "sys"
 
 require "turbo.cdef"
 
 local UCHAR_MAX = tonumber(ffi.new("uint8_t", -1))
 local g_time_str_buf = ffi.new("char[1024]")
 local g_time_t = ffi.new("time_t[1]")
--- local g_timeval = ffi.new("struct timeval")
+
+if ffi.os ~= "Linux" then
+local sys = require "sys"
+else
+local g_timeval = ffi.new("struct timeval")
+end
 
 local util = {}
 
@@ -133,8 +136,16 @@ end
 
 --- Current msecs since epoch. Better granularity than Lua builtin.
 -- @return Number
+if ffi.os == "Linux" then
+function util.gettimeofday()
+    C.gettimeofday(g_timeval, nil)
+    return ((tonumber(g_timeval.tv_sec) * 1000) + 
+        math.floor(tonumber(g_timeval.tv_usec) / 1000))
+end
+else
 function util.gettimeofday()
 	return sys.msec()
+end
 end
 
 --- Create a time string used in HTTP cookies.

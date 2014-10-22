@@ -36,7 +36,7 @@ local ltp_loaded, libturbo_parser = pcall(ffi.load, "tffi_wrap")
 if not ltp_loaded then
     -- Check /usr/local/lib explicitly also.
     ltp_loaded, libturbo_parser = 
-        pcall(ffi.load, "libtffi_wrap")
+        pcall(ffi.load, "/usr/local/lib/libtffi_wrap.so")
     if not ltp_loaded then 
         error("Could not load libtffi_wrap.so. \
             Please run makefile and ensure that installation is done correct.")
@@ -154,7 +154,6 @@ end
 -- @param UF_prop (Number) Available fields described in the httputil.UF table.
 -- @return nil if not found, else the string value is returned.
 function httputil.HTTPParser:get_url_field(UF_prop)
-
     if not self.url then
         self:get_url()
     end
@@ -365,8 +364,6 @@ function httputil.HTTPParser:parse_header(hdr_str, hdr_t)
     end
     self.tpw = tpw
     if self.tpw.parser.http_errno ~= 0 or self.tpw.parsed_sz == 0 then
-	print("HDR: ", hdr_str)
-	 log.stacktrace(debug.traceback())
         error(
             string.format(
                 "libturbo_parser could not parse HTTP header. %s %s", 

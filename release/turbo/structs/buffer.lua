@@ -68,7 +68,6 @@ end
 -- @param data The data to append in char * form.
 -- @param len The length of the data in bytes.
 function Buffer:append_right(data, len)
-
     if self.tbuffer.mem - self.tbuffer.sz >= len then
         ffi.copy(self.tbuffer.data + self.tbuffer.sz, data, len)
         self.tbuffer.sz = self.tbuffer.sz + len

@@ -24,7 +24,7 @@ local arg = {...}
 package.path = package.path..";network/?.lua"
 package.path = package.path..";lua/?.lua"
 
-package.cpath = package.cpath..";../?.dll"
+package.cpath = package.cpath..";bin/win64/?.dll"
 
 -- ***********************************************************************
 

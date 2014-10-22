@@ -20,8 +20,7 @@ local log =         require "turbo.log"
 local util =        require "turbo.util"
 local iostream =    require "turbo.iostream"
 local ioloop =      require "turbo.ioloop"
---local socket =      require "network.lib_socket"
---local tcp =      	require "network.lib_tcp"
+local socket =      require "turbo.socket_ffi"
 local sockutil =    require "turbo.sockutil"
 local crypto =      require "turbo.crypto"
 local ffi =         require "ffi"
@@ -29,16 +28,16 @@ local bit =         require "bit"
 require "turbo.cdef"
 require "turbo.3rdparty.middleclass"
 
--- local SOL_SOCKET =  socket.SOL_SOCKET
--- local SO_RESUSEADDR = socket.SO_REUSEADDR
--- local O_NONBLOCK =  socket.O_NONBLOCK
--- local F_SETFL =     socket.F_SETFL
--- local F_GETFL =     socket.F_GETFL
--- local SOCK_STREAM = socket.SOCK_STREAM
--- local INADDRY_ANY = socket.INADDR_ANY
--- local AF_INET =     socket.AF_INET
--- local EWOULDBLOCK = socket.EWOULDBLOCK
--- local EAGAIN =      socket.EAGAIN
+local SOL_SOCKET =  socket.SOL_SOCKET
+local SO_RESUSEADDR = socket.SO_REUSEADDR
+local O_NONBLOCK =  socket.O_NONBLOCK
+local F_SETFL =     socket.F_SETFL
+local F_GETFL =     socket.F_GETFL
+local SOCK_STREAM = socket.SOCK_STREAM
+local INADDRY_ANY = socket.INADDR_ANY
+local AF_INET =     socket.AF_INET
+local EWOULDBLOCK = socket.EWOULDBLOCK
+local EAGAIN =      socket.EAGAIN
 
 local tcpserver = {}  -- tcpserver namespace
 
@@ -116,8 +115,7 @@ end
 -- not defined AF_INET is used as default.
 function tcpserver.TCPServer:listen(port, address, backlog, family)
     assert(port, [[Please specify port for listen() method]])
-    --local sock = sockutil.bind_sockets(port, address, backlog, family)
-	local sock = tcp.listen(port)
+    local sock = sockutil.bind_sockets(port, address, backlog, family)
     self:add_sockets({sock})
 end
 
@@ -131,8 +129,10 @@ function tcpserver.TCPServer:add_sockets(sockets)
     end
     for _, sock in ipairs(sockets) do
         self._sockets[#self._sockets + 1] = sock
-        sockutil.add_accept_handler(sock, self._handle_connection, 
-									self.io_loop, self)
+        sockutil.add_accept_handler(sock, 
+            self._handle_connection, 
+            self.io_loop, 
+            self)
     end
 end
 
@@ -153,7 +153,6 @@ function tcpserver.TCPServer:add_socket(socket) self:add_sockets({socket}) end
 -- @param family (Number) Optional socket family. Defined in Socket module. If 
 -- not defined AF_INET is used as default.
 function tcpserver.TCPServer:bind(port, address, backlog, family)
-	--local sockets = tcp.listen(port)
     local sockets = sockutil.bind_sockets(port, address, backlog, family)
     if self._started then
        self:add_sockets(sockets)
@@ -166,17 +165,17 @@ end
 function tcpserver.TCPServer:start(procs)   
     assert((not self._started), "Already started TCPServer.")
     self._started = true
-    --if procs and procs > 1 then
-        --for _ = 1, procs - 1 do 
-            --local pid = ffi.C.fork()
-            --if pid ~= 0 then 
-            --    log.devel(string.format(
-            --        "[tcpserver.lua] Created extra worker process: %d", 
-            --        tonumber(pid)))
-            --    break
-            --end
-        --end
-    --end
+    if procs and procs > 1 then
+        for _ = 1, procs - 1 do 
+            local pid = ffi.C.fork()
+            if pid ~= 0 then 
+                log.devel(string.format(
+                    "[tcpserver.lua] Created extra worker process: %d", 
+                    tonumber(pid)))
+                break
+            end
+        end
+    end
     local sockets = self._pending_sockets
     self._pending_sockets = {}
     self:add_sockets(sockets)

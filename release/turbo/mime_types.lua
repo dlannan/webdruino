@@ -25,11 +25,6 @@
 
 
 return {
-	js  = "application/javascript",
-	ttf = "application/font-woff",
-	eot = "application/font-woff",
-	woff = "application/font-woff",
-	woff2 = "application/font-woff",
     ez = "application/andrew-inset",
     atom = "application/atom+xml",
     hqx = "application/mac-binhex40",
@@ -79,6 +74,7 @@ return {
     hdf = "application/x-hdf",
     xhtml = "application/xhtml+xml",
     xht = "application/xhtml+xml",
+    js = "application/x-javascript",
     skp = "application/x-koan",
     skd = "application/x-koan",
     skt = "application/x-koan",

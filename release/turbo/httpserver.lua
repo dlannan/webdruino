@@ -87,7 +87,6 @@ end
 -- @param stream (IOStream instance) Stream for the newly connected client.
 -- @param address (String) IP address of newly connected client.
 function httpserver.HTTPServer:handle_stream(stream, address)
-
     local http_conn = httpserver.HTTPConnection(
         stream, 
         address, 
@@ -199,7 +198,6 @@ end
 --- Handles incoming headers. The HTTPHeaders class is used to parse
 -- request headers.
 function httpserver.HTTPConnection:_on_headers(data)
-
     local headers
     local status, headers = xpcall(httputil.HTTPParser, 
         _on_headers_error_handler, data, httputil.hdr_t["HTTP_REQUEST"])

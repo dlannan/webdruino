@@ -37,6 +37,8 @@ pid_t getpid();
 
 ]]
 
+if ffi.os == "Linux" then
+
 --- ******* Socket *******
 ffi.cdef([[
 typedef int32_t socklen_t;
@@ -115,6 +117,7 @@ ffi.cdef [[
 ]]
 end
 
+end
 
 --- ******* epoll.h *******
 ffi.cdef[[
@@ -259,15 +262,18 @@ extern sighandler_t signal (int32_t signum, sighandler_t handler);
 ]])
 
 
+if ffi.os == "Linux" then
 --- ******* Time *******
 ffi.cdef([[
 typedef long time_t ;
 typedef long suseconds_t ;
+
 struct timeval
 {            
     time_t tv_sec;      /* Seconds.  */
     suseconds_t tv_usec;    /* Microseconds.  */
 };
+
 struct timezone
 {
     int tz_minuteswest;     /* Minutes west of GMT.  */
@@ -300,7 +306,6 @@ struct tm * gmtime (const time_t * timer);
 extern int gettimeofday (struct timeval *tv, timezone_ptr_t tz);
 
 ]])
-
 
 --- ******* Resolv *******
 ffi.cdef [[
@@ -339,6 +344,7 @@ const char *gai_strerror(int ecode);
 
 ]]
 
+end
 
 --- ******* HTTP parser and libtffi *******
 ffi.cdef[[
