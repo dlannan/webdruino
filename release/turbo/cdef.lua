@@ -261,6 +261,11 @@ typedef void (*sighandler_t) (int32_t);
 extern sighandler_t signal (int32_t signum, sighandler_t handler);
 ]])
 
+--- ******* Time *******
+ffi.cdef [[
+typedef long time_t ;
+typedef long suseconds_t ;
+]]
 
 if ffi.os == "Linux" then
 ffi.cdef[[
@@ -286,12 +291,7 @@ struct addrinfo {
 
 end
 
-
---- ******* Time *******
 ffi.cdef([[
-typedef long time_t ;
-typedef long suseconds_t ;
-
 struct timezone
 {
     int tz_minuteswest;     /* Minutes west of GMT.  */
