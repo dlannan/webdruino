@@ -26,13 +26,14 @@ The protocol is complete. Although it needs documenting, and
 an extension method described (for controls and SPI etc).
 ----------------------------------------------------------------------
 
-C02a - Working build for Linux and OSX				- STARTED
+C02a - Working build for Linux and OSX				- OSX Left
 Estimate: 1 week.
   Need to finish repairing Network Tcp Server (removal)
   Get LuaSys working on Linux/OSX and new changes to turbo.
 ----------------------------------------------------------------------
 Started testing on Linux with new LuaSys dll. Various issues.
 Windows 64 bit built ok.
+Windows 32 bit and now Linux 64 (and 32 bit - untested) are all working.
 ----------------------------------------------------------------------
   
 C03 - Configuration for Digital and Analog pin assignment.
