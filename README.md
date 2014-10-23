@@ -9,7 +9,8 @@ Web Control of your favourite Arduino device.
 
 WARNING: Very early development - not ready for deployment! Use at own risk!
 
-Currently Win32 only working version (Linux and Win64 versions coming)
+Windows 32 bit and Windows 64 bit now working.
+Linux 32 bit and 64 bit working.
 
 TODO:
 - Digital pins operational
