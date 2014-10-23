@@ -24,11 +24,22 @@ local arg = {...}
 package.path = package.path..";network/?.lua"
 package.path = package.path..";lua/?.lua"
 
+local ffi = require("ffi")
+
+if ffi.os == "Windows" then
+if ffi.abi("32bit") then
+package.cpath = package.cpath..";bin/win32/?.dll"
+else
 package.cpath = package.cpath..";bin/win64/?.dll"
+end
+end
+
+if ffi.os == "Linux" then
+package.cpath = package.cpath..";bin/linux/?.so"
+end
 
 -- ***********************************************************************
 
-local ffi = require("ffi")
 local bit = require("bit")
 local floor = math.floor
 
