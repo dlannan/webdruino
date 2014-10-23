@@ -21,15 +21,13 @@
 -- SOFTWARE."            
 
 local ffi =     require "ffi"
-
--- If windows then use window specific calls with luasys.
-if ffi.os == "Windows" then 
-	return require "turbo.win.socket_win_ffi"
-end
-
 local log =     require "turbo.log"
 local util =    require "turbo.util"
 require "turbo.cdef"
+
+-- windows specific here
+local sys = 		require "sys"
+local sock = 		require "sys.sock"
 
 local octal = function (s) return tonumber(s, 8) end
 
@@ -286,6 +284,8 @@ local function new_nonblock_socket(family, stype, protocol)
     return fd
 end
 
+if ffi.os == "Windows" then return util end
+
 local value = ffi.new("int32_t[1]")
 local socklen = ffi.new("socklen_t[1]", ffi.sizeof("int32_t"))
 local function get_socket_error(fd)
@@ -299,6 +299,11 @@ local function get_socket_error(fd)
     else
        return 0, tonumber(value[0])
     end    
+end
+
+local function win_connect(sock, addr, addrlen)
+	r = sock:connect(sock.addr():inet(-1, addr))
+	return r
 end
 
 local export = util.tablemerge(SOCK,
@@ -332,7 +337,7 @@ return util.tablemerge({
     dup = ffi.C.dup,
     bind = ffi.C.bind,
     listen = ffi.C.listen,
-    connect = ffi.C.connect,
+    connect = win_connect,
     send = ffi.C.send,
     close = ffi.C.close,
     recv = ffi.C.recv,
