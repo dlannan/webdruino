@@ -32,7 +32,7 @@ local g_time_t = ffi.new("time_t[1]")
 if ffi.os == "Windows" then
 local sys = require "sys"
 else
-local g_timeval = ffi.new("struct timeval")
+g_timeval = ffi.new("struct timeval")
 end
 
 local util = {}
