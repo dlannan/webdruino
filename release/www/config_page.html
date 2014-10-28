@@ -19,20 +19,21 @@
 	<link href="css/bootstrap-theme.css" rel="stylesheet"> 
 
 	<script>			  		
+      window.onload = function(){
 		$("#serial_rate").val("VAR_serial_update");
 		$("#serial_name").val("VAR_serial_name");
 
 		$("#update_serial_name_btn").click(function () {
 			$.get( "/configcomms.html", { name: $("#serial_name").val(), tm:VAR_tval }, 0 ); });
 		$("#update_rate_btn").click(function (event, data) {
-			$.get( "/configcomms.html", { rate: $("#serial_rate").val(), tm:VAR_tval }, 0 ); });	
+			$.get( "/configcomms.html", { rate: $("#serial_rate").val(), tm:VAR_tval }, 0 ); });
 				
 		var auto_refresh = setInterval(
 		function ()
 		{
 			$("#comms_log").load("/readcomms.html?value=VAR_tval");
 		}, VAR_serial_update ); // refresh every 2000 milliseconds	
-	}
+	};
 	</script>
 
   </head>
@@ -59,12 +60,36 @@
 		<div class="btn-group">
 			<button onclick="location.href='/enablecomms.html?VAR_tval';" class="btn btn-danger">Reset Serial</button>
 		</div>
-  
 		<div class="input-group">
 		  <span class="input-group-btn">
 			<button id="update_serial_name_btn" class="btn btn-default" type="button">Device</button>
 		  </span>
 		  <input  id="serial_name" type="text" class="form-control" style="width:80px;">
+		</div><!-- /input-group -->
+		</nav>
+	</div>
+	</div>
+	
+	</nav>
+
+	<div class="panel-group" id="accordion">
+	  <div class="panel panel-default">
+		<div class="panel-heading">
+		  <h4 class="panel-title">
+			<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+			  <h8>Configuration</h8>
+			</a>
+		  </h4>
+		</div>
+		<div id="collapseOne" class="panel-collapse collapse in">
+		  <div class="panel-body">
+			<div id="config_window" style="height:200px;overflow: auto">
+		
+		<div class="input-group">
+		  <span class="input-group-btn">
+			<button id="arduin_sdk_pathid" class="btn btn-default" type="button">Arduino SDK Path</button>
+		  </span>
+		  <input id="arduin_sdk_path" type="text" class="form-control">
 		</div><!-- /input-group -->
 		
 		<div class="btn-group">
@@ -84,31 +109,13 @@
 		  <span class="input-group-btn">
 			<button id="update_rate_btn" class="btn btn-default" type="button">Rate</button>
 		  </span>
-		  <input id="serial_rate" type="text" class="form-control" style="width:80px;">
+		  <input id="serial_rate" type="text" class="form-control">
 		  <span class="input-group-addon">ms</span>
 		</div><!-- /input-group -->
 
 		<div class="btn-group">
 			<button onclick="location.href='/index.htmlttq';" class="btn btn-danger">Close Server</button>
 		</div>
-		</nav>
-	</div>
-	</div>
-	
-	</nav>
-
-	<div class="panel-group" id="accordion">
-	  <div class="panel panel-default">
-		<div class="panel-heading">
-		  <h4 class="panel-title">
-			<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-			  <h8>Logging</h8>
-			</a>
-		  </h4>
-		</div>
-		<div id="collapseOne" class="panel-collapse collapse in">
-		  <div class="panel-body">
-			<div id="comms_log" style="height:200px;overflow: auto">
 			</div>
 		  </div>
 		</div>

@@ -76,7 +76,20 @@ require("http-interface")
 local BasePageHandler = class("BasePageHandler", turbo.web.RequestHandler)
 function BasePageHandler:get(data, stuff)
 
-	WritePage(self)
+	WriteMainPage(self)
+
+	if(data == "ttq") then
+		turbo.ioloop.instance():close()
+	end	
+end
+
+-- ***********************************************************************
+-- Handler that takes a single argument 'username'
+
+local ConfigPageHandler = class("ConfigPageHandler", turbo.web.RequestHandler)
+function ConfigPageHandler:get(data, stuff)
+
+	WriteConfigPage(self)
 
 	if(data == "ttq") then
 		turbo.ioloop.instance():close()
@@ -112,11 +125,19 @@ end
 local ConfigHandler = class("ConfigHandler", turbo.web.RequestHandler)
 function ConfigHandler:get()
 	
-	serial_name = self:get_argument("name", "COM5", true)
-	serial_update = tonumber(self:get_argument("rate", "2000", true))
+	local t_name = self:get_argument("name", "FALSE", true)
+	local t_update = self:get_argument("rate", "FALSE", true)
 	--print("Check: ", serial_name, serial_update)
 	
-	self:redirect("/index.html?"..tostring(getVal()), false)
+	-- Not updating COM name
+	if t_name ~= "FALSE" then 
+		serial_name = t_name
+	end
+	
+	-- Not updating update rate
+	if t_update ~= "FALSE" then
+		serial_update = tonumber(t_update)
+	end	
 end
 
 -- ***********************************************************************
@@ -202,7 +223,8 @@ local app = turbo.web.Application:new({
 	{"^/readanalog.html(.*)", AnalogHandler},
 	{"^/readdigital.html(.*)", DigitalHandler},
     {"^/analoginput.html(.*)", AnalogInputHandler},
-    {"^/code_page.html(.*)", CodePageHandler},
+    {"^/code_page.html", CodePageHandler},
+    {"^/config.html", ConfigPageHandler},
     {"^/index.html(.*)", BasePageHandler},
 	{"^/img/(.*)",  turbo.web.StaticFileHandler, "www/img/"},
 	{"^/$", turbo.web.StaticFileHandler, "www/index.html"},
