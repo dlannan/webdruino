@@ -38,9 +38,9 @@ local log = {
     ["categories"] = {
         -- Enable or disable global log categories.
         -- The categories can be modified at any time.
-        ["success"] = true,
-        ["notice"] = true,
-        ["warning"] = true,
+        ["success"] = false,
+        ["notice"] = false,
+        ["warning"] = false,
         ["error"] = true,
         ["debug"] = true,
         ["development"] = true,

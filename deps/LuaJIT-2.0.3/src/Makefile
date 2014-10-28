@@ -28,7 +28,7 @@ NODOTABIVER= 51
 CC= gcc
 #
 # Use this if you want to force a 32 bit build on a 64 bit multilib OS.
-#CC= gcc -m32
+# CC= gcc -m32
 #
 # Since the assembler part does NOT maintain a frame pointer, it's pointless
 # to slow down the C part by not omitting it. Debugging, tracebacks and
@@ -103,7 +103,7 @@ XCFLAGS=
 #XCFLAGS+= -DLUAJIT_ENABLE_LUA52COMPAT
 #
 # Disable the JIT compiler, i.e. turn LuaJIT into a pure interpreter.
-#XCFLAGS+= -DLUAJIT_DISABLE_JIT
+XCFLAGS+= -DLUAJIT_DISABLE_JIT
 #
 # Some architectures (e.g. PPC) can use either single-number (1) or
 # dual-number (2) mode. Uncomment one of these lines to override the
