@@ -50,10 +50,22 @@ local cmd = require "commands"
 -- RS232 Setup for interface 
 
 rs232 = require("sys-comm")
-bauds 			= { 9600, 19200, 38400, 57600, 115200 }
-baud_rate 		= 1
-serial_name 	= "COM5"
-serial_update 	= 2000
+
+-- Mapped devices - The web-server can update and read/write multiple mapped
+--                  devices at once. 
+--                  When a user switches device, the served page is from that device 
+
+-- These globals need to go into web client attachments.
+bauds 				= { 9600, 19200, 38400, 57600, 115200 }
+serial_rate			= 9600
+serial_name 		= "COM5"
+-- How fast the web server should attempt to poll the serial port - default 1000ms
+update_rate 		= 1000
+
+arduino_board		= "arduino:avr:uno"
+arduino_sdk_path	= [[C:\Program Files (x86)\Arduino]]
+arduino_compile		= ""
+arduino_upload		= ""
 
 -- ***********************************************************************
 -- This will turn into pin configs.
@@ -122,22 +134,51 @@ end
 
 -- ***********************************************************************
 -- Handler that takes a single argument 'username'
+local CompileVerifyHandler = class("CompileVerifyHandler", turbo.web.RequestHandler)
+function CompileVerifyHandler:post(data, stuff)
+
+	local code = (self:get_argument("code", "FALSE", true))
+	if code ~= "FALSE" then
+		-- set and execute the arduino environment variables
+		local envf = io.open("build/arduino_env.bat", "w")
+		if envf then
+			envf:write("\""..arduino_sdk_path.."\\arduino.exe\" ")
+			envf:write("--verify --board "..arduino_board.." ")
+			envf:write("--pref build.path=build ")
+			envf:write("--port "..serial_name.." ")
+			envf:write("--v arduino_app.ino")
+			envf:close()
+		end
+		
+		-- Copy arduin code to temp c file.
+		local f = io.open("build/arduino_app.ino", "w")
+		if f then
+			f:write(code)
+			f:close()
+			
+			-- Now run it.
+			os.execute("cd build & arduino_env.bat")
+		end
+	end
+end
+
+
+-- ***********************************************************************
+-- Handler that takes a single argument 'username'
 local ConfigHandler = class("ConfigHandler", turbo.web.RequestHandler)
 function ConfigHandler:get()
 	
 	local t_name = self:get_argument("name", "FALSE", true)
-	local t_update = self:get_argument("rate", "FALSE", true)
-	--print("Check: ", serial_name, serial_update)
+	local t_update = self:get_argument("update", "FALSE", true)
+	local t_srate = self:get_argument("srate", "FALSE", true)
+	local t_board = self:get_argument("board", "FALSE", true)
 	
-	-- Not updating COM name
-	if t_name ~= "FALSE" then 
-		serial_name = t_name
-	end
+	--print("Check: ", t_name, t_update, t_srate)
 	
-	-- Not updating update rate
-	if t_update ~= "FALSE" then
-		serial_update = tonumber(t_update)
-	end	
+	if t_name ~= "FALSE" then serial_name = t_name end
+	if t_update ~= "FALSE" then	update_rate = tonumber(t_update) end	
+	if t_srate ~= "FALSE" then	serial_rate = tonumber(t_srate) end	
+	if t_board ~= "FALSE" then	arduino_board = t_board end	
 end
 
 -- ***********************************************************************
@@ -223,6 +264,9 @@ local app = turbo.web.Application:new({
 	{"^/readanalog.html(.*)", AnalogHandler},
 	{"^/readdigital.html(.*)", DigitalHandler},
     {"^/analoginput.html(.*)", AnalogInputHandler},
+	
+	{"^/compileverify.html", CompileVerifyHandler},
+	
     {"^/code_page.html", CodePageHandler},
     {"^/config.html", ConfigPageHandler},
     {"^/index.html(.*)", BasePageHandler},

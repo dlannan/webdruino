@@ -20,29 +20,38 @@
 
 	<script>			  		
       window.onload = function(){
-		$("#serial_rate").val("VAR_serial_update");
+		$("#serial_rate").val("VAR_serial_rate");
+		$("#arduino_serial_rate").val("VAR_serial_rate");
+		$("#arduino_board").text("VAR_arduino_board");
+		$("#update_rate").val("VAR_update_rate");
 		$("#serial_name").val("VAR_serial_name");
+		$("#arduino_sdk_panel").val("VAR_arduino_sdk_path");
 
 		$("#update_serial_name_btn").click(function () {
 			$.get( "/configcomms.html", { name: $("#serial_name").val(), tm:VAR_tval }, 0 ); });
 		$("#update_rate_btn").click(function (event, data) {
-			$.get( "/configcomms.html", { rate: $("#serial_rate").val(), tm:VAR_tval }, 0 ); });
-				
+			$.get( "/configcomms.html", { update: $("#update_rate").val(), tm:VAR_tval }, 0 ); });
+		$("#serial_rate_list li a").click(function (event, data) {
+			$.get( "/configcomms.html", { srate: $(this).text(), tm:VAR_tval }, 0 ); 
+			$("#arduino_serial_rate").val($(this).text());
+		});		
+		$("#arduino_board_list li a").click(function (event, data) {
+			$.get( "/configcomms.html", { board: $(this).text(), tm:VAR_tval }, 0 ); 
+			$("#arduino_board").text($(this).text());
+		});			
 		var auto_refresh = setInterval(
 		function ()
 		{
 			$("#comms_log").load("/readcomms.html?value=VAR_tval");
-		}, VAR_serial_update ); // refresh every 2000 milliseconds	
+		}, VAR_update_rate ); // refresh every 2000 milliseconds	
 	};
 	</script>
 
   </head>
   <body>
-  
  	<div class="container">
 	
 	<nav class="navbar navbar-default" role="navigation">
-	
 	<div class="container-fluid">	
 		<!-- Brand and toggle get grouped for better mobile display -->
 		<div class="navbar-header">
@@ -69,7 +78,6 @@
 		</nav>
 	</div>
 	</div>
-	
 	</nav>
 
 	<div class="panel-group" id="accordion">
@@ -83,34 +91,53 @@
 		</div>
 		<div id="collapseOne" class="panel-collapse collapse in">
 		  <div class="panel-body">
-			<div id="config_window" style="height:200px;overflow: auto">
+			<div id="config_window" style="height:400px;overflow: auto">
 		
 		<div class="input-group">
 		  <span class="input-group-btn">
 			<button id="arduin_sdk_pathid" class="btn btn-default" type="button">Arduino SDK Path</button>
 		  </span>
-		  <input id="arduin_sdk_path" type="text" class="form-control">
+		  <input id="arduino_sdk_panel" type="text" class="form-control">
 		</div><!-- /input-group -->
 		
-		<div class="btn-group">
-		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-			Baud Rate <span class="caret"></span>
-		  </button>
-		  <ul class="dropdown-menu" role="menu">
-			<li><a href="#">VAR_bauds1</a></li>
-			<li><a href="#">VAR_bauds2</a></li>
-			<li><a href="#">VAR_bauds3</a></li>
-			<li><a href="#">VAR_bauds4</a></li>
-			<li><a href="#">VAR_bauds5</a></li>
-		  </ul>
-		</div>
-
 		<div class="input-group">
 		  <span class="input-group-btn">
-			<button id="update_rate_btn" class="btn btn-default" type="button">Rate</button>
+		  <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			Arduino Board Type <span class="caret"></span>
+		  </button>
+		  <ul id="arduino_board_list" class="dropdown-menu" role="menu">
+			<li><a href="#">ATmega48P</a></li>
+			<li><a href="#">ATmega88P</a></li>
+			<li><a href="#">ATmega168</a></li>
+			<li><a href="#">ATmega168P</a></li>
+			<li><a href="#">ATmega1280</a></li>
+		  </ul>
 		  </span>
-		  <input id="serial_rate" type="text" class="form-control">
-		  <span class="input-group-addon">ms</span>
+		  <p id="arduino_board" class="navbar-text"></p>
+		  
+		</div>
+		
+		<div class="input-group">
+		<span class="input-group-btn">
+		  <button id="serial_rate_btn" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			Arduino Serial Baud Rate <span class="caret"></span>
+		  </button>
+		  <ul id="serial_rate_list" class="dropdown-menu" role="menu">
+			<li><a tabindex="-1" href="#">VAR_bauds1</a></li>
+			<li><a tabindex="-1" href="#">VAR_bauds2</a></li>
+			<li><a tabindex="-1" href="#">VAR_bauds3</a></li>
+			<li><a tabindex="-1" href="#">VAR_bauds4</a></li>
+			<li><a tabindex="-1" href="#">VAR_bauds5</a></li>
+		  </ul>
+		</span>
+		<input id="arduino_serial_rate" type="text" class="form-control cl-4">
+
+		<span class="input-group-btn">
+		  <button id="update_rate_btn" class="btn btn-default" type="button">Arduino Poll Rate</button>
+		</span>
+		<input id="update_rate" type="text" class="form-control cl-4" >
+
+		<span class="input-group-addon">ms</span>
 		</div><!-- /input-group -->
 
 		<div class="btn-group">

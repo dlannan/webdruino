@@ -148,6 +148,11 @@ function init(blockly) {
     load_by_url(dest);
   }
 }
+    window.onload = function(){
+		$("#compile_verify_btn").click(function () {
+			$.post( "/compileverify.html", { code:$("#textarea_arduino").val() },0	); 
+		});
+	}
   </script>
   <style>
     body {
@@ -269,7 +274,25 @@ function init(blockly) {
 			<button onclick="location.href='/index.html';" class="btn btn-info">Main Page</button>
 		</div>
 		</div>
-		
+
+		<nav class="navbar-form navbar-right" role="search">
+		<div class="btn-group">
+			<button id="compile_verify_btn" class="btn btn-primary">Compile & Verify</button>
+		</div>
+		<div class="btn-group">
+			<button onclick="location.href='/compileupload.html?VAR_tval';" class="btn btn-warning">Compile & Upload</button>
+		</div>
+		<div class="btn-group">
+			<button onclick="location.href='/resetserial.html?VAR_tval';" class="btn btn-danger">Reset Serial</button>
+		</div>
+  
+		<div class="input-group">
+		  <span class="input-group-btn">
+			<button id="update_serial_name_btn" class="btn btn-default" type="button">Device</button>
+		  </span>
+		  <input  id="serial_name" type="text" class="form-control" style="width:80px;">
+		</div><!-- /input-group -->
+		</nav>
 	</div>
 	</nav>
 

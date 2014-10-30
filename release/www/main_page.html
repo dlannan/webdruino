@@ -63,13 +63,10 @@
 			gaugeWidthScale: 0.4          
 		});		
 		
-		$("#serial_rate").val("VAR_serial_update");
 		$("#serial_name").val("VAR_serial_name");
 
 		$("#update_serial_name_btn").click(function () {
-			$.get( "/configcomms.html", { name: $("#serial_name").val(), tm:VAR_tval }, 0 ); });
-		$("#update_rate_btn").click(function (event, data) {
-			$.get( "/configcomms.html", { rate: $("#serial_rate").val(), tm:VAR_tval }, 0 ); });	
+			$.get( "/configcomms.html", { name: $("#serial_name").val(), tm:VAR_tval }, 0 ); });	
 		
 		$("#analoginput1").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"1",  aod:data.value  }, 0 ); });
 		$("#analoginput2").bind("slider:changed", function (event, data) {	$.post("/analoginput.html",  {  aot:"2",  aod:data.value  }, 0 ); });
@@ -106,7 +103,7 @@
 			$.get("/readdigital.html?input=14&amp;value=VAR_tval", function (data) { $("#digital13").attr("src", data+"?VAR_tval"); });
 
 			
-		}, VAR_serial_update ); // refresh every 2000 milliseconds
+		}, VAR_update_rate ); // refresh every 2000 milliseconds
 	
 	}
 	</script>

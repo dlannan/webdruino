@@ -33,7 +33,7 @@ function WriteMainPage(handler, data)
 		obuff = string.gsub(obuff, "VAR_analog_output3", tostring(analog_output[3]) )
 		obuff = string.gsub(obuff, "VAR_analog_output4", tostring(analog_output[4]) )
 		
-		obuff = string.gsub(obuff, "VAR_serial_update", tostring(serial_update) )
+		obuff = string.gsub(obuff, "VAR_update_rate", tostring(update_rate) )
 		
 		obuff = string.gsub(obuff, "VAR_read_data", read_data )
 		obuff = string.gsub(obuff, "VAR_tval", tostring(tval) )
@@ -61,7 +61,10 @@ function WriteConfigPage(handler, data)
 		obuff = string.gsub(obuff, "VAR_bauds4", tostring(bauds[4]) )
 		obuff = string.gsub(obuff, "VAR_bauds5", tostring(bauds[5]) )
 		obuff = string.gsub(obuff, "VAR_serial_name", tostring(serial_name) )
-		obuff = string.gsub(obuff, "VAR_serial_update", tostring(serial_update) )
+		obuff = string.gsub(obuff, "VAR_serial_rate", tostring(serial_rate) )
+		obuff = string.gsub(obuff, "VAR_update_rate", tostring(update_rate) )
+		obuff = string.gsub(obuff, "VAR_arduino_board", arduino_board )
+		obuff = string.gsub(obuff, "VAR_arduino_sdk_path", arduino_sdk_path )
 		
 		obuff = string.gsub(obuff, "VAR_tval", tostring(tval) )
 
