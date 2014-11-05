@@ -133,7 +133,10 @@ REM     Find all external libraries, and compile a list of include paths...
 
 if !abuild_nolibs! == false (
 	set abuild_include_paths=
-	set abuild_include_paths_root=!arduino_path!\hardware\libraries
+	set abuild_include_paths_root=!arduino_path!\libraries
+
+	set abuild_include_paths=!abuild_include_paths! -I"!arduino_path!\hardware\arduino\cores\arduino"
+	set abuild_include_paths=!abuild_include_paths! -I"!arduino_path!\hardware\arduino\variants\standard"
 
 	REM HACK: for some reason, I am unable to get for work with both /R and /D, when it needs to expand
 	REM an environment variable for the /R root..? hardcoding the path works... using pushd/popd as a workaround
@@ -141,12 +144,24 @@ if !abuild_nolibs! == false (
 	for /R /D %%d in ("*.*") do (
 		REM Don't include example directories
 		set test_dir=%%d
+		
+		if NOT !test_dir! EQU !abuild_include_paths_root!\Esplora (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\Firmata (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\GSM (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\RobotIRremote (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\Robot_Control (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\Robot_Motor (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\TFT (
+		if NOT !test_dir! EQU !abuild_include_paths_root!\WiFi (
+		
 		set test=!test_dir:*examples=examples!
 		set test=!test:~0,8!
-		
+
 		if NOT !test! EQU examples (
 			set abuild_include_paths=!abuild_include_paths! -I"%%~d"
 		)
+		
+		) ) ) ) ) ) ) )
 	)
 	popd
 )
@@ -211,7 +226,7 @@ if exist !abuild_runtime_library! (
 
 for %%f in ("!arduino_runtime!\*.c") do (
     set abuild_objfile=!abuild_output!\%%~nf.c.o
-    set abuild_cmd=avr-gcc !abuild_gcc_opts! "%%~f" "-o!abuild_objfile!"
+    set abuild_cmd=avr-gcc !abuild_gcc_opts! "%%~f" -o"!abuild_objfile!"
     !abuild_report! !abuild_cmd!
     if exist !abuild_objfile! (del !abuild_objfile!)
     !abuild_cmd!
@@ -226,7 +241,7 @@ for %%f in ("!arduino_runtime!\*.c") do (
 
 for %%f in ("!arduino_runtime!\*.cpp") do (
     set abuild_objfile=!abuild_output!\%%~nf.cpp.o
-    set abuild_cmd=avr-g++ !abuild_gpp_opts! "%%~f" "-o!abuild_objfile!"
+    set abuild_cmd=avr-g++ !abuild_gpp_opts! "%%~f" -o"!abuild_objfile!"
     !abuild_report! !abuild_cmd!
     if exist !abuild_objfile! (del !abuild_objfile!)
     !abuild_cmd!
@@ -248,9 +263,18 @@ REM Once again, do the pushd/pop hack for the recursive for loop...
 REM Also, all abuild_cmd are CALL'ed below, otherwise the shell passes arguments incorrectly
 REM to the avr toolchain on the second iteration through the inner loops..!
 if !abuild_nolibs! == false (
-	for /D %%d in ("!arduino_path!\hardware\libraries\*.*") do (
+	for /D %%d in ("!arduino_path!\libraries\*.*") do (
 		!abuild_report! Building library: %%d
 		
+		if NOT %%d EQU !abuild_include_paths_root!\Esplora (
+		if NOT %%d EQU !abuild_include_paths_root!\Firmata (
+		if NOT %%d EQU !abuild_include_paths_root!\GSM (
+		if NOT %%d EQU !abuild_include_paths_root!\RobotIRremote (
+		if NOT %%d EQU !abuild_include_paths_root!\Robot_Control (
+		if NOT %%d EQU !abuild_include_paths_root!\Robot_Motor (
+		if NOT %%d EQU !abuild_include_paths_root!\TFT (
+		if NOT %%d EQU !abuild_include_paths_root!\WiFi (
+	
 		pushd %%d
 		for /R %%f in ("*.c") do (
 			rem Make sure we're not building an example
@@ -261,7 +285,7 @@ if !abuild_nolibs! == false (
 			if NOT !test! EQU examples (
 				popd
 				set abuild_objfile=!abuild_output!\%%~nf.c.o
-				set abuild_cmd=avr-gcc !abuild_gcc_opts! "%%~f" "-o!abuild_objfile!"
+				set abuild_cmd=avr-gcc !abuild_gcc_opts! "%%~f" -o !abuild_objfile!
 				!abuild_report! !abuild_cmd!
 				if exist !abuild_objfile! (del !abuild_objfile!)
 				call !abuild_cmd!
@@ -285,7 +309,7 @@ if !abuild_nolibs! == false (
 			if NOT !test! EQU examples (
 				popd
 				set abuild_objfile=!abuild_output!\%%~nf.cpp.o
-				set abuild_cmd=avr-g++ !abuild_gpp_opts! "%%~f" "-o!abuild_objfile!"
+				set abuild_cmd=avr-g++ !abuild_gpp_opts! "%%~f" -o !abuild_objfile!
 				!abuild_report! !abuild_cmd!
 				if exist !abuild_objfile! (del !abuild_objfile!)
 				call !abuild_cmd!
@@ -300,6 +324,8 @@ if !abuild_nolibs! == false (
 			)
 		)
 		popd
+		
+		))))))))
 	)
 )
 
@@ -310,7 +336,7 @@ REM     Link everything...
 
 REM     Link to an ELF file...
 set abuild_elf=!abuild_output!\!abuild_short_name!.elf
-set abuild_cmd=avr-gcc -Os "-Wl,-u,vfprintf -lprintf_flt -lm,-Map=!abuild_output!\!abuild_short_name!.map,--cref" -mmcu=!arduino_mcu! -o !abuild_elf! !abuild_user_objfile! !abuild_runtime_library! -L!abuild_output!
+set abuild_cmd=avr-gcc -Os -Wl,-u,vfprintf -lprintf_flt -lm -Map=!abuild_output!\!abuild_short_name!.map --cref -mmcu=!arduino_mcu! -o !abuild_elf! !abuild_user_objfile! !abuild_runtime_library! -L!abuild_output!
 !abuild_report! !abuild_cmd!
 !abuild_cmd!
 if not exist !abuild_elf! (goto end)
@@ -393,7 +419,7 @@ echo.
 echo.where sketchname is the name of your sketch, 
 echo.e.g. MySketch.cpp or MySketch.pde.
 echo.This batch file will do minor preprocessing to sketches
-echo.ending with .pde, such as including Arduino.h and inserting
+echo.ending with .pde, such as including WProgram.h and inserting
 echo.main^(^) code for you.  You may need to modify sketches developed
 echo.in the Arduino IDE a little bit to have their own function
 echo.prototypes, etc.  Sketches with other extensions will be 

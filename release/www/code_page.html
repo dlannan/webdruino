@@ -149,8 +149,14 @@ function init(blockly) {
   }
 }
     window.onload = function(){
+		$("#build_log").load("/buildlog.html?value=VAR_tval");
+	
 		$("#compile_verify_btn").click(function () {
-			$.post( "/compileverify.html", { code:$("#textarea_arduino").val() },0	); 
+			$.post( "/compileverify.html", { code:$("#textarea_arduino").val(), upload:0 },0	); 
+		});
+		
+		$("#compile_upload_btn").click(function () {
+			$.post( "/compileverify.html", { code:$("#textarea_arduino").val(), upload:1 },0	); 
 		});
 	}
   </script>
@@ -280,7 +286,7 @@ function init(blockly) {
 			<button id="compile_verify_btn" class="btn btn-primary">Compile & Verify</button>
 		</div>
 		<div class="btn-group">
-			<button onclick="location.href='/compileupload.html?VAR_tval';" class="btn btn-warning">Compile & Upload</button>
+			<button id="compile_upload_btn" class="btn btn-warning">Compile & Upload</button>
 		</div>
 		<div class="btn-group">
 			<button onclick="location.href='/resetserial.html?VAR_tval';" class="btn btn-danger">Reset Serial</button>
@@ -371,7 +377,7 @@ function init(blockly) {
 		</div>
 		<div id="loggercollapseOne" class="panel-collapse collapse in">
 		  <div class="panel-body">
-			<div id="comms_log" style="height:200px;overflow: auto">
+			<div id="build_log" style="height:200px;overflow: auto">
 			</div>
 		  </div>
 		</div>

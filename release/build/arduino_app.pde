@@ -1,19 +1,24 @@
-int D3;
-
-int D1;
-
-int D2;
+int Distance;
 
 void setup()
 {
-  pinMode(1, INPUT);
+  pinMode(2, OUTPUT);
+  Serial.begin(9600);
+
 }
 
 
 void loop()
 {
-  D3 = analogRead(A3);
-  D1 = digitalRead(1);
-  D2 = D1 + D1;
+  Distance = 0;
+  if (Distance <= 100) {
+    digitalWrite(2,HIGH);
+    Serial.print(("You are close now."));
+    Serial.print('\t');
+
+  } else {
+    digitalWrite(2,LOW);
+
+  }
 
 }

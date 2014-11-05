@@ -34,7 +34,7 @@ if not defined arduino_path (
 REM ---------------------------------------------------------------------------
 REM     Verify that ARDUINO_PATH points to a valid Arduino-0011 installation...
 
-set arduino_runtime=!arduino_path!\hardware\cores\arduino
+set arduino_runtime=!arduino_path!\hardware\arduino\cores\arduino
 for %%f in (
     "!arduino_path!\cygwin1.dll"
 ) do (
@@ -47,11 +47,11 @@ for %%f in (
 
 REM ---------------------------------------------------------------------------
 REM Set path to find avr tools
-set path=%path%;!arduino_path!\hardware\tools\avr\bin
+set path=%path%;"!arduino_path!\hardware\tools\avr\bin"
 
 REM ---------------------------------------------------------------------------
 REM     Make sure we can find cygwin1.dll and compiler/linker tools...
-set path=!arduino_path!;!arduino_path!\tools\avr\bin;!path!
+set path=!arduino_path!;!arduino_path!\hardware\tools\avr\bin;!path!
 !abuild_report! set path to: !path!
 
 REM ---------------------------------------------------------------------------

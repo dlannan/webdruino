@@ -1,0 +1,68 @@
+
+D:\GitHub\webdruino\release\build>set "ARDUINO_PATH=C:\Program Files (x86)\Arduino" 
+
+D:\GitHub\webdruino\release\build>set ARDUINO_MCU=atmega328p 
+
+D:\GitHub\webdruino\release\build>set ARDUINO_PROGRAMMER=stk500 
+
+D:\GitHub\webdruino\release\build>set ARDUINO_FCPU=16000000 
+
+D:\GitHub\webdruino\release\build>set ARDUINO_COMPORT=COM5 
+
+D:\GitHub\webdruino\release\build>set ARDUINO_BURNRATE=9600 
+
+D:\GitHub\webdruino\release\build>abuild.bat -r -u arduino_app.pde 
+C:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino\Stream.cpp: In member function 'bool Stream::find(char*)':
+C:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino\Stream.cpp:78: warning: deprecated conversion from string constant to 'char*'
+C:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino\Tone.cpp:119: warning: only initialized variables can be placed into program memory area
+C:\Program Files (x86)\Arduino\libraries\SD\utility\SdFile.cpp: In static member function 'static uint8_t SdFile::make83Name(const char*, uint8_t*)':
+C:\Program Files (x86)\Arduino\libraries\SD\utility\SdFile.cpp:259: warning: only initialized variables can be placed into program memory area
+C:\Program Files (x86)\Arduino\libraries\SoftwareSerial\SoftwareSerial.cpp:59: warning: only initialized variables can be placed into program memory area
+avr-gcc: unrecognized option '-Map=.\obj\arduino_app.pde.map'
+abuild.bat: Successfully built .\obj\arduino_app.pde.rom
+abuild.bat: Successfully built .\obj\arduino_app.pde.hex
+   text	   data	    bss	    dec	    hex	filename
+      0	  12974	      0	  12974	   32ae	.\obj\arduino_app.pde.hex
+
+abuild.bat: Uploading sketch...
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_getsync(): timeout communicating with programmer
+
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_getsync(): timeout communicating with programmer
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_getsync(): timeout communicating with programmer
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_getsync(): timeout communicating with programmer
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+avrdude: stk500v2_ReceiveMessage(): timeout
+^CTerminate batch job (Y/N)? 
+^CTerminate batch job (Y/N)? 
+^CTerminate batch job (Y/N)? 
+^CTerminate batch job (Y/N)? 
+^Caupload.bat:  exiting with return code -1073741510
+*** ERROR uploading ***

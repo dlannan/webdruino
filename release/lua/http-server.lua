@@ -46,6 +46,8 @@ local floor = math.floor
 local turbo = require "turbo"
 local cmd = require "commands"
 
+local boards = require("arduino-boards")
+
 -- ***********************************************************************
 -- RS232 Setup for interface 
 
@@ -62,7 +64,7 @@ serial_name 		= "COM5"
 -- How fast the web server should attempt to poll the serial port - default 1000ms
 update_rate 		= 1000
 
-arduino_board		= "arduino:avr:uno"
+arduino_board		= "atmega328p"
 arduino_sdk_path	= [[C:\Program Files (x86)\Arduino]]
 arduino_compile		= ""
 arduino_upload		= ""
@@ -133,31 +135,45 @@ function CommEnableHandler:get(data, stuff)
 end
 
 -- ***********************************************************************
--- Handler that takes a single argument 'username'
+-- Handler that looks after the compilation of the arduino file.
 local CompileVerifyHandler = class("CompileVerifyHandler", turbo.web.RequestHandler)
 function CompileVerifyHandler:post(data, stuff)
 
 	local code = (self:get_argument("code", "FALSE", true))
+	local upload = tonumber(self:get_argument("upload", "0", true))
+	
 	if code ~= "FALSE" then
 		-- set and execute the arduino environment variables
 		local envf = io.open("build/arduino_env.bat", "w")
 		if envf then
-			envf:write("\""..arduino_sdk_path.."\\arduino.exe\" ")
-			envf:write("--verify --board "..arduino_board.." ")
-			envf:write("--pref build.path=build ")
-			envf:write("--port "..serial_name.." ")
-			envf:write("--v arduino_app.ino")
+			--envf:write("cd tools\n")
+			envf:write("set \"ARDUINO_PATH="..arduino_sdk_path.."\"\n")
+			envf:write("set ARDUINO_MCU="..arduino_board.."\n")
+			envf:write("set ARDUINO_PROGRAMMER=stk500\n")
+			envf:write("set ARDUINO_FCPU=16000000\n")
+			envf:write("set ARDUINO_COMPORT="..serial_name.."\n")
+			envf:write("set ARDUINO_BURNRATE="..serial_rate.."\n")
+			
+			if upload == 1 then
+				envf:write("abuild.bat -r -u arduino_app.pde\n")
+			else
+				envf:write("abuild.bat -r -c arduino_app.pde\n")
+			end
+			
 			envf:close()
 		end
 		
 		-- Copy arduin code to temp c file.
-		local f = io.open("build/arduino_app.ino", "w")
+		local f = io.open("build/arduino_app.pde", "w")
 		if f then
+			--f:write("#include <Arduino.h>\n")
 			f:write(code)
 			f:close()
 			
 			-- Now run it.
-			os.execute("cd build & arduino_env.bat")
+			os.execute("cd build & arduino_env.bat > build.log 2>&1")
+			-- get the log file...
+			self:redirect("/code_page.html", false)
 		end
 	end
 end
@@ -244,6 +260,21 @@ function CommHandler:get(data)
 end
 
 -- ***********************************************************************
+-- Handler that takes a single argument 'username'
+local BuildLogHandler = class("BuildLogHandler", turbo.web.RequestHandler)
+function BuildLogHandler:get(data)
+	
+	local flog = io.open("build/build.log", "r")
+	if flog then
+		local log_data = flog:read("*a")
+		log_data = string.gsub(log_data, "\n", "<br>")
+		self:write(log_data)
+		flog:close()
+	end
+	--self:redirect("/index.html", false)
+end
+
+-- ***********************************************************************
 
 local AnalogInputHandler = class("AnalogInputHandler", turbo.web.RequestHandler)
 function AnalogInputHandler:post()
@@ -260,12 +291,13 @@ local app = turbo.web.Application:new({
     -- Serve single index.html file on root requests.
 	{"^/enablecomms.html", CommEnableHandler},
 	{"^/readcomms.html", CommHandler},
+	{"^/buildlog.html", BuildLogHandler},
 	{"^/configcomms.html(.*)", ConfigHandler},
 	{"^/readanalog.html(.*)", AnalogHandler},
 	{"^/readdigital.html(.*)", DigitalHandler},
     {"^/analoginput.html(.*)", AnalogInputHandler},
 	
-	{"^/compileverify.html", CompileVerifyHandler},
+	{"^/compileverify.html(.*)", CompileVerifyHandler},
 	
     {"^/code_page.html", CodePageHandler},
     {"^/config.html", ConfigPageHandler},
