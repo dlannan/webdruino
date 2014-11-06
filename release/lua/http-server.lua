@@ -149,7 +149,7 @@ function CompileVerifyHandler:post(data, stuff)
 			--envf:write("cd tools\n")
 			envf:write("set \"ARDUINO_PATH="..arduino_sdk_path.."\"\n")
 			envf:write("set ARDUINO_MCU="..arduino_board.."\n")
-			envf:write("set ARDUINO_PROGRAMMER=stk500\n")
+			envf:write("set ARDUINO_PROGRAMMER=stk500v2\n")
 			envf:write("set ARDUINO_FCPU=16000000\n")
 			envf:write("set ARDUINO_COMPORT="..serial_name.."\n")
 			envf:write("set ARDUINO_BURNRATE="..serial_rate.."\n")
@@ -173,7 +173,7 @@ function CompileVerifyHandler:post(data, stuff)
 			-- Now run it.
 			os.execute("cd build & arduino_env.bat > build.log 2>&1")
 			-- get the log file...
-			self:redirect("/code_page.html", false)
+			--self:redirect("/code_page.html", false)
 		end
 	end
 end

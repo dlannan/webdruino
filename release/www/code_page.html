@@ -156,6 +156,7 @@ function init(blockly) {
 		});
 		
 		$("#compile_upload_btn").click(function () {
+			$.get("/enablecomms.html?VAR_tval");
 			$.post( "/compileverify.html", { code:$("#textarea_arduino").val(), upload:1 },0	); 
 		});
 	}

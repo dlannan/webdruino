@@ -9,7 +9,7 @@ D:\GitHub\webdruino\release\build>set ARDUINO_FCPU=16000000
 
 D:\GitHub\webdruino\release\build>set ARDUINO_COMPORT=COM5 
 
-D:\GitHub\webdruino\release\build>set ARDUINO_BURNRATE=9600 
+D:\GitHub\webdruino\release\build>set ARDUINO_BURNRATE=19200 
 
 D:\GitHub\webdruino\release\build>abuild.bat -r -u arduino_app.pde 
 C:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino\Stream.cpp: In member function 'bool Stream::find(char*)':
@@ -25,44 +25,10 @@ abuild.bat: Successfully built .\obj\arduino_app.pde.hex
       0	  12974	      0	  12974	   32ae	.\obj\arduino_app.pde.hex
 
 abuild.bat: Uploading sketch...
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_getsync(): timeout communicating with programmer
+avrdude: ser_open(): can't open device "\\.\COM5": Access is denied.
 
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_getsync(): timeout communicating with programmer
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_getsync(): timeout communicating with programmer
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_getsync(): timeout communicating with programmer
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-avrdude: stk500v2_ReceiveMessage(): timeout
-^CTerminate batch job (Y/N)? 
-^CTerminate batch job (Y/N)? 
-^CTerminate batch job (Y/N)? 
-^CTerminate batch job (Y/N)? 
-^Caupload.bat:  exiting with return code -1073741510
+
+avrdude done.  Thank you.
+
+aupload.bat:  exiting with return code 1
 *** ERROR uploading ***
