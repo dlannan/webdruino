@@ -7,17 +7,27 @@ Web Control of your favourite Arduino device.
 
 [id]: /screenshots/WebDruino001.png "Screenshot001"
 
+WebDruion + BlocklyDuino - https://github.com/gasolin/BlocklyDuino
+[id]: /screenshots/WebDruino002.png "Screenshot002"
+
 WARNING: Very early development - becoming stable. Use at own risk!
 
 Windows 32 bit and Windows 64 bit now working.
 Linux 32 bit and 64 bit working.
 
+GOOD BITS:
+It works. On Windows you should be able to build and upload Arduino software. Ensure you examine the config panel and make sure you enter the correct data for your Arduino. After some time this will become more automated, at the moment its very manual.
+
+Video of how to use WebDruino coming soon.. 
+More Blockly components that will represent WebDruino elements to come. Eventually nearly all of WebDruino will be some sort of BlocklyDruino set of components.
+
+Lots of stability and crashes fixed.
+
 TODO:
+- Need to remove batch files and execute Arduino compile and upload from turbo. 
 - Digital pins operational
 - Configuration for Analog and Digital pin usage.
 - Configuration for Arduino type
-- Lua programming panel
-- Arduino software in Code page
 - Bugs 
 
 Things to be very wary of:
