@@ -3,13 +3,13 @@ D:\GitHub\webdruino\release\build>set "ARDUINO_PATH=C:\Program Files (x86)\Ardui
 
 D:\GitHub\webdruino\release\build>set ARDUINO_MCU=atmega328p 
 
-D:\GitHub\webdruino\release\build>set ARDUINO_PROGRAMMER=stk500 
+D:\GitHub\webdruino\release\build>set ARDUINO_PROGRAMMER=arduino 
 
 D:\GitHub\webdruino\release\build>set ARDUINO_FCPU=16000000 
 
 D:\GitHub\webdruino\release\build>set ARDUINO_COMPORT=COM5 
 
-D:\GitHub\webdruino\release\build>set ARDUINO_BURNRATE=19200 
+D:\GitHub\webdruino\release\build>set ARDUINO_BURNRATE=57600 
 
 D:\GitHub\webdruino\release\build>abuild.bat -r -u arduino_app.pde 
 C:\Program Files (x86)\Arduino\hardware\arduino\cores\arduino\Stream.cpp: In member function 'bool Stream::find(char*)':
@@ -22,13 +22,38 @@ avr-gcc: unrecognized option '-Map=.\obj\arduino_app.pde.map'
 abuild.bat: Successfully built .\obj\arduino_app.pde.rom
 abuild.bat: Successfully built .\obj\arduino_app.pde.hex
    text	   data	    bss	    dec	    hex	filename
-      0	  12974	      0	  12974	   32ae	.\obj\arduino_app.pde.hex
+      0	   4308	      0	   4308	   10d4	.\obj\arduino_app.pde.hex
 
 abuild.bat: Uploading sketch...
-avrdude: ser_open(): can't open device "\\.\COM5": Access is denied.
 
+avrdude: AVR device initialized and ready to accept instructions
+
+Reading | ################################################## | 100% 0.00s
+
+avrdude: Device signature = 0x1e950f
+avrdude: NOTE: FLASH memory has been specified, an erase cycle will be performed
+         To disable this feature, specify the -D option.
+avrdude: erasing chip
+avrdude: reading input file ".\obj\arduino_app.pde.hex"
+avrdude: input file .\obj\arduino_app.pde.hex auto detected as Intel Hex
+avrdude: writing flash (4308 bytes):
+
+Writing | ################################################## | 100% 1.18s
+
+avrdude: 4308 bytes of flash written
+avrdude: verifying flash memory against .\obj\arduino_app.pde.hex:
+avrdude: load data flash data from input file .\obj\arduino_app.pde.hex:
+avrdude: input file .\obj\arduino_app.pde.hex auto detected as Intel Hex
+avrdude: input file .\obj\arduino_app.pde.hex contains 4308 bytes
+avrdude: reading on-chip flash data:
+
+Reading | ################################################## | 100% 0.87s
+
+avrdude: verifying ...
+avrdude: 4308 bytes of flash verified
+
+avrdude: safemode: Fuses OK
 
 avrdude done.  Thank you.
 
-aupload.bat:  exiting with return code 1
-*** ERROR uploading ***
+aupload.bat:  exiting with return code 0

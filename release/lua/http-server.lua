@@ -40,13 +40,13 @@ end
 
 -- ***********************************************************************
 
-local bit = require("bit")
-local floor = math.floor
+local bit 		= require("bit")
+local floor 	= math.floor
 
-local turbo = require "turbo"
-local cmd = require "commands"
+local turbo 	= require "turbo"
+local cmd 		= require "commands"
 
-local boards = require("arduino-boards")
+local boards 	= require("arduino-boards")
 
 -- ***********************************************************************
 -- RS232 Setup for interface 
@@ -59,10 +59,10 @@ rs232 = require("sys-comm")
 
 -- These globals need to go into web client attachments.
 bauds 				= { 9600, 19200, 38400, 57600, 115200 }
-serial_rate			= 9600
+serial_rate			= 57600 
 serial_name 		= "COM5"
 -- How fast the web server should attempt to poll the serial port - default 1000ms
-update_rate 		= 1000
+update_rate 		= 2000
 
 arduino_board		= "atmega328p"
 arduino_sdk_path	= [[C:\Program Files (x86)\Arduino]]
@@ -130,6 +130,7 @@ function CommEnableHandler:get(data, stuff)
 	else
 		read_data = read_data.."----- Serial Port Reset ------<br>"
 	end
+
 	-- Reset the server.. just to make sure the data is fresh.
 	self:redirect("/index.html", false)
 end
@@ -138,6 +139,10 @@ end
 -- Handler that looks after the compilation of the arduino file.
 local CompileVerifyHandler = class("CompileVerifyHandler", turbo.web.RequestHandler)
 function CompileVerifyHandler:post(data, stuff)
+
+	-- Must reset any comms - avrdude needs it!!
+	--rs232:InitComms()
+	rs232:CloseComms()
 
 	local code = (self:get_argument("code", "FALSE", true))
 	local upload = tonumber(self:get_argument("upload", "0", true))
@@ -149,7 +154,7 @@ function CompileVerifyHandler:post(data, stuff)
 			--envf:write("cd tools\n")
 			envf:write("set \"ARDUINO_PATH="..arduino_sdk_path.."\"\n")
 			envf:write("set ARDUINO_MCU="..arduino_board.."\n")
-			envf:write("set ARDUINO_PROGRAMMER=stk500v2\n")
+			envf:write("set ARDUINO_PROGRAMMER=arduino\n")
 			envf:write("set ARDUINO_FCPU=16000000\n")
 			envf:write("set ARDUINO_COMPORT="..serial_name.."\n")
 			envf:write("set ARDUINO_BURNRATE="..serial_rate.."\n")
@@ -246,8 +251,8 @@ function CommHandler:get(data)
 	cmd:ReadDigital()
 	
 	local d = rs232:ReadComms()
-	local data = cmd:CheckCommand(d)	
-	if data ~= "nil" then
+	if d ~= "nil" then
+		local data = cmd:CheckCommand(d)	
 		if string.len(data) > 1 then
 			data = string.gsub(data, "\n", "<br>")
 			read_data = read_data..data
@@ -289,6 +294,12 @@ end
 -- ***********************************************************************
 local app = turbo.web.Application:new({
     -- Serve single index.html file on root requests.
+	{"^/img/(.*)",  turbo.web.StaticFileHandler, "www/img/"},
+
+    {"^/code_page.html", CodePageHandler},
+    {"^/config.html", ConfigPageHandler},
+    {"^/index.html(.*)", BasePageHandler},
+
 	{"^/enablecomms.html", CommEnableHandler},
 	{"^/readcomms.html", CommHandler},
 	{"^/buildlog.html", BuildLogHandler},
@@ -299,10 +310,6 @@ local app = turbo.web.Application:new({
 	
 	{"^/compileverify.html(.*)", CompileVerifyHandler},
 	
-    {"^/code_page.html", CodePageHandler},
-    {"^/config.html", ConfigPageHandler},
-    {"^/index.html(.*)", BasePageHandler},
-	{"^/img/(.*)",  turbo.web.StaticFileHandler, "www/img/"},
 	{"^/$", turbo.web.StaticFileHandler, "www/index.html"},
     -- Serve contents of directory.
     {"^/(.*)$", turbo.web.StaticFileHandler, "www/"}
@@ -320,5 +327,5 @@ turbo.ioloop.instance():start()
 -- ***********************************************************************
 
 rs232:CloseComms()
-
+	
 -- ***********************************************************************
