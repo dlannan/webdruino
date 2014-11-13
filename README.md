@@ -3,12 +3,15 @@ webdruino
 
 Web Control of your favourite Arduino device.
 
-![alt text][id]
+![alt text][id1]
 
-[id]: /screenshots/WebDruino001.png "Screenshot001"
+[id1]: /screenshots/WebDruino001.png "Screenshot001"
 
-WebDruion + BlocklyDuino - https://github.com/gasolin/BlocklyDuino
-[id]: /screenshots/WebDruino002.png "Screenshot002"
+WebDruino + BlocklyDuino - https://github.com/gasolin/BlocklyDuino
+
+![alt text][id2]
+
+[id2]: /screenshots/WebDruino002.png "Screenshot002"
 
 WARNING: Very early development - becoming stable. Use at own risk!
 
