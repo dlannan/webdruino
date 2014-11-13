@@ -22,13 +22,13 @@ avr-gcc: unrecognized option '-Map=.\obj\arduino_app.pde.map'
 abuild.bat: Successfully built .\obj\arduino_app.pde.rom
 abuild.bat: Successfully built .\obj\arduino_app.pde.hex
    text	   data	    bss	    dec	    hex	filename
-      0	   4308	      0	   4308	   10d4	.\obj\arduino_app.pde.hex
+      0	   4356	      0	   4356	   1104	.\obj\arduino_app.pde.hex
 
 abuild.bat: Uploading sketch...
 
 avrdude: AVR device initialized and ready to accept instructions
 
-Reading | ################################################## | 100% 0.00s
+Reading | ################################################## | 100% 0.02s
 
 avrdude: Device signature = 0x1e950f
 avrdude: NOTE: FLASH memory has been specified, an erase cycle will be performed
@@ -36,21 +36,21 @@ avrdude: NOTE: FLASH memory has been specified, an erase cycle will be performed
 avrdude: erasing chip
 avrdude: reading input file ".\obj\arduino_app.pde.hex"
 avrdude: input file .\obj\arduino_app.pde.hex auto detected as Intel Hex
-avrdude: writing flash (4308 bytes):
+avrdude: writing flash (4356 bytes):
 
-Writing | ################################################## | 100% 1.18s
+Writing | ################################################## | 100% 1.20s
 
-avrdude: 4308 bytes of flash written
+avrdude: 4356 bytes of flash written
 avrdude: verifying flash memory against .\obj\arduino_app.pde.hex:
 avrdude: load data flash data from input file .\obj\arduino_app.pde.hex:
 avrdude: input file .\obj\arduino_app.pde.hex auto detected as Intel Hex
-avrdude: input file .\obj\arduino_app.pde.hex contains 4308 bytes
+avrdude: input file .\obj\arduino_app.pde.hex contains 4356 bytes
 avrdude: reading on-chip flash data:
 
-Reading | ################################################## | 100% 0.87s
+Reading | ################################################## | 100% 0.89s
 
 avrdude: verifying ...
-avrdude: 4308 bytes of flash verified
+avrdude: 4356 bytes of flash verified
 
 avrdude: safemode: Fuses OK
 

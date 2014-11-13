@@ -91,10 +91,6 @@ local BasePageHandler = class("BasePageHandler", turbo.web.RequestHandler)
 function BasePageHandler:get(data, stuff)
 
 	WriteMainPage(self)
-
-	if(data == "ttq") then
-		turbo.ioloop.instance():close()
-	end	
 end
 
 -- ***********************************************************************
@@ -104,10 +100,6 @@ local ConfigPageHandler = class("ConfigPageHandler", turbo.web.RequestHandler)
 function ConfigPageHandler:get(data, stuff)
 
 	WriteConfigPage(self)
-
-	if(data == "ttq") then
-		turbo.ioloop.instance():close()
-	end	
 end
 
 -- ***********************************************************************

@@ -54,6 +54,9 @@ function WriteConfigPage(handler, data)
 	local rc, buf = fetch_static_file(STATIC_CACHE, "www/config_page.html")
 	
 	if rc == 0 then
+		-- For display purposes backslashes need to be "\\"
+		local temp_path = string.gsub(arduino_sdk_path, "\\", "\\\\")
+	
 		obuff = tostring(buf)
 		obuff = string.gsub(obuff, "VAR_bauds1", tostring(bauds[1]) )
 		obuff = string.gsub(obuff, "VAR_bauds2", tostring(bauds[2]) )
@@ -64,7 +67,7 @@ function WriteConfigPage(handler, data)
 		obuff = string.gsub(obuff, "VAR_serial_rate", tostring(serial_rate) )
 		obuff = string.gsub(obuff, "VAR_update_rate", tostring(update_rate) )
 		obuff = string.gsub(obuff, "VAR_arduino_board", arduino_board )
-		obuff = string.gsub(obuff, "VAR_arduino_sdk_path", arduino_sdk_path )
+		obuff = string.gsub(obuff, "VAR_arduino_sdk_path", temp_path )
 		
 		obuff = string.gsub(obuff, "VAR_tval", tostring(tval) )
 

@@ -148,15 +148,58 @@ function init(blockly) {
     load_by_url(dest);
   }
 }
+
     window.onload = function(){
+	
+		// Setup
+		this.$('.js-loading-bar').modal({
+		  backdrop: 'static',
+		  show: false
+		}).on('shown.bs.modal', function( event ) {
+
+		   var $bar = $(event.target).find('.progress-bar'),
+			   _wait = function() {       
+					setTimeout(function() {
+					  if ( $bar.is(':visible')) { 
+						   $bar.addClass('animate');
+					   } else {
+						  console.log('not ready'); 
+						  _wait();
+					   }
+					}, 0);       
+			   };
+		   
+		   _wait();
+		   
+		});
+		
 		$("#build_log").load("/buildlog.html?value=VAR_tval");
 	
 		$("#compile_verify_btn").click(function () {
+			  var $modal = $('.js-loading-bar'),
+				  $bar = $modal.find('.progress-bar');
+			  
+			  $modal.modal('show');
+
+			  setTimeout(function() {
+				$modal.modal('hide'); 
+				$bar.removeClass('animate');
+				//$modal.modal('hide');        
+			  }, 1500);
 			$.post( "/compileverify.html", { code:$("#textarea_arduino").val(), upload:0 },0	); 
 		});
 		
 		$("#compile_upload_btn").click(function () {
-			$.get("/enablecomms.html?VAR_tval");
+			  var $modal = $('.js-loading-bar'),
+				  $bar = $modal.find('.progress-bar');
+			  
+			  $modal.modal('show');
+
+			  setTimeout(function() {
+				$modal.modal('hide'); 
+				$bar.removeClass('animate');
+				//$modal.modal('hide');        
+			  }, 1500);
 			$.post( "/compileverify.html", { code:$("#textarea_arduino").val(), upload:1 },0	); 
 		});
 	}
@@ -263,10 +306,38 @@ function init(blockly) {
     button:hover {
       box-shadow: 2px 2px 5px #888;
     }
+
+	.progress-bar.animate {
+	   width: 100%;
+	}
+
+	.modal-backdrop {
+	   opacity: 0.5;
+	}
+
+	.modal-dialog {
+	   -webkit-transform: translate(0px, 50%);
+	   transform: translate(0px, 50%);
+	}
+
+	.progress-popup {
+	   margin-bottom: 0;
+	}
   </style>
   </head>
   <body>
-  
+	<div class="modal js-loading-bar">
+	 <div class="modal-dialog">
+	   <div class="modal-content">
+		 <div class="modal-body">
+		   <div class="progress progress-popup">
+			<div class="progress-bar"></div>
+		   </div>
+		 </div>
+	   </div>
+	 </div>
+	</div>
+
  	<div class="container">
 	
 	<nav class="navbar navbar-default" role="navigation">
